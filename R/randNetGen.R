@@ -1,10 +1,10 @@
 ### my algo
-## Idea is as follows: 
+## Idea is as follows:
 # count the number of possible unique combinations / input the number of combinations required (m)
 # count the number of 1's and 2's and identify the lesser count (n)
 # define unique perm counter
 # while the counter is less than m, sample n positions, put the corresponding digits in it,
-#  convert the positions to binary, store it if the combination is unique. 
+#  convert the positions to binary, store it if the combination is unique.
 
 uniquePerms <- function(x, max = 0){
     N <- length(x)
@@ -35,7 +35,7 @@ uniquePerms <- function(x, max = 0){
     return(lists)
 }
 
-randNetGen <- function(topo_files) {
+randNetGen <- function(topo_files, maxNets = 500) {
     sapply(topo_files, function(file) {
         name <- str_remove(file, ".topo")
         dir.create(name)
@@ -43,7 +43,7 @@ randNetGen <- function(topo_files) {
         setwd(name)
         wt <- df$Type
         onetwo <- df[, 1:2]
-        rand_orders <- uniquePerms(wt)
+        rand_orders <- uniquePerms(wt, max = maxNets)
         dummy <- sapply(1:nrow(rand_orders), function(x){
             y <- rand_orders[x,]
             df1 <- cbind.data.frame(onetwo, y)
@@ -54,5 +54,5 @@ randNetGen <- function(topo_files) {
     })
 }
 # topo_files <- list.files("topo_files", pattern = ".topo")
-# 
+#
 # setwd("topo_files")
