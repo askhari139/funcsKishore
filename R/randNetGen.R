@@ -13,13 +13,23 @@ uniquePerms <- function(x, max = 0){
     nVec <- c(n1,1)
     if (n1>n2) nVec <- c(n2,2)
     notOne <- ifelse(nVec[2] == 1, 2, 1)
-    if (max == 0)
-        max <- factorial(N)/(factorial(n1)*factorial(n2))
+
+    maxPossible <- factorial(N)/(factorial(n1)*factorial(n2))
+    if (max == 0 || max > maxPossible)
+        max <- maxPossible
     if (max > 2000)
         max <- 2000
+    lists <- matrix(rep(notOne, max*N), ncol = N)
+    if (max == maxPossible) {
+        positions <- combn(1:N, nVec[1])
+        sapply(1:max, function(i) {
+            lists[i, positions[i]] <<- nVec[2]
+        })
+        return(lists)
+    }
     perms <- rep(0,max+1)
     perms[1] <- sum(2^(which(x == nVec[2])))
-    lists <- matrix(rep(notOne, max*N), ncol = N)
+
     count <- 1
     while(count<max){
         nSamp <- sample(1:N, nVec[1])
