@@ -52,6 +52,7 @@ randNetGen <- function(topo_files, maxNets = 500) {
         df <- read.delim(file, sep = " ")
         setwd(name)
         wt <- df$Type
+        write_delim(wt, "wild.topo", delim = " ")
         onetwo <- df[, 1:2]
         rand_orders <- uniquePerms(wt, max = maxNets)
         dummy <- sapply(1:nrow(rand_orders), function(x){
