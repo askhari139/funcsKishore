@@ -12,7 +12,7 @@ getGsVec <- function(method = c("Cluster", "Assigned", "Brute"), nTeams = 2, lma
             group <- readLines(teamsFile) %>% str_split(",")
         }
         else if(method == "Brute")
-            group <- findTeams(topoFile, lmax)[[1]]
+            group <- findBruteTeams(topoFile, lmax)[[1]]
         else if (method == "Cluster")
             group <- findClusterTeams(topoFiles, nTeams, lmax)
         else {
