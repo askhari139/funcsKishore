@@ -111,6 +111,7 @@ InfluenceMatrix <-
     function(topoFile,
              lmax = 10,
              write = T) {
+        net <- str_remove(topoFile, ".topo")
         if (file.exists(paste0("Influence/", net, "_reducedInfl.csv"))) {
             influence_reduced <-
                 read_csv(paste0("Influence/", net, "_reducedInfl.csv"),
