@@ -25,7 +25,7 @@ findBruteTeams <- function(topoFile, twoTeams = F, lmax = 10) {
     ls <- TopoToIntMat(topoFile)
     intmat <- ls[[1]]
     nodes <- ls[[2]]
-    inflMat <- InfluenceMatrix(net, intmat, nodes, lmax)
+    inflMat <- InfluenceMatrix(topoFile, lmax)
     nodes <- rownames(inflMat) %>% sort
     df <- inflMat
     df1 <- apply(df, 2, function(x) {

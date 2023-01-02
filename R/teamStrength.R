@@ -23,7 +23,7 @@ getGsVec <- function(method = c("Cluster", "Assigned", "Brute"), nTeams = 2, lma
         ls <- TopoToIntMat(topoFile)
         intmat <- ls[[1]]
         nodes <- ls[[2]]
-        inflMat <- InfluenceMatrix(net, intmat, nodes, lmax)
+        inflMat <- InfluenceMatrix(topoFile, lmax)
         gL <- lapply(group, function(g1) {
             sapply(group, function(g2) {
                 (inflMat[g1, g2] %>% sum)/(length(g1)*length(g2))
@@ -51,7 +51,7 @@ plotTeams <- function(topoFile) {
     ls <- TopoToIntMat(topoFile)
     intmat <- ls[[1]]
     nodes <- ls[[2]]
-    inflMat <- InfluenceMatrix(net, intmat, nodes, pathLength=10)
+    inflMat <- InfluenceMatrix(topoFile)
     df2 <- data.frame(df) %>%
         mutate(nodes1 = nodes) %>%
         gather(key = "Nodes", value = "Influence", -nodes1) %>%
