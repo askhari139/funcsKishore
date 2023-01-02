@@ -1,8 +1,6 @@
-BmodelSetup <- function(simPackage = "./Bmodel") {
+BmodelSetup <- function(simPackage = "../Bmodel") {
     wd <- getwd()
-    if (!dir.exists(simPackage))
-        dir.create(simPackage)
-    setwd(simPackage)
+    DirectoryNav(simPackage)
     simPackage <- getwd()
     download.file(
         "https://github.com/askhari139/Boolean.jl/archive/refs/heads/main.zip",
@@ -22,7 +20,7 @@ BmodelSetup <- function(simPackage = "./Bmodel") {
     setwd(wd)
 }
 
-simulation <- function(setupBmodel = T, simPackage = "./Bmodel", numThreads = 3) {
+simulation <- function(setupBmodel = T, simPackage = "../Bmodel", numThreads = 3) {
     nThreads <- parallel::detectCores()
     if(numThreads > 0.8*nThreads) {
         numThreads <- round(0.8*nThreads)
@@ -67,5 +65,4 @@ simulation <- function(setupBmodel = T, simPackage = "./Bmodel", numThreads = 3)
         })
         future:::ClusterRegistry("stop")
     }
-    
 }

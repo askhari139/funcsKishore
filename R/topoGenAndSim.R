@@ -77,7 +77,7 @@ UniquePerms2 <- cmpfun(UniquePerms2)
 #' @examples
 RandomNetworks <- function(numRand = 500, nSwap = 10) {
     wd <- getwd()
-    setwd(topoFileFolder)
+    # setwd(topoFileFolder)
     topoFiles <- list.files(".", pattern = ".topo")
     topoDf <-
         lapply(topoFiles, read.delim, sep = " ") %>% set_names(topoFiles)
@@ -91,11 +91,8 @@ RandomNetworks <- function(numRand = 500, nSwap = 10) {
         if (perMax < numRand) {
             numRand <- perMax
         }
-        setwd(randRaw)
-        if (!dir.exists(net)) {
-            dir.create(net)
-        }
-        setwd(net)
+        DirectoryNav("RandomNetworks")
+        DirectoryNav(net)
         write_delim(df, "wild.topo", delim = " ", quote = "none")
         onetwo <- df[, 1:2]
         rand_orders <- UniquePerms2(wt, max = numRand, nSwap = nSwap)
@@ -118,7 +115,7 @@ RandomNetworks <- function(numRand = 500, nSwap = 10) {
 #' @examples
 EdgeDeletion <- function() {
     wd <- getwd()
-    setwd(topoFileFolder)
+    # setwd(topoFileFolder)
     topoFiles <- list.files(".", pattern = ".topo")
     topoDf <-
         lapply(topoFiles, read.delim, sep = " ") %>% set_names(topoFiles)
@@ -126,11 +123,8 @@ EdgeDeletion <- function() {
     for (topoFile in topoFiles) {
         net <- str_remove(topoFile, ".topo")
         df <- topoDf[[topoFile]]
-        setwd(edgeDel)
-        if (!dir.exists(net)) {
-            dir.create(net)
-        }
-        setwd(net)
+        DirectoryNav("EdgeDeletion")
+        DirectoryNav(net)
         sapply(1:nrow(df), function(x) {
             write_delim(df,
                         "wild.topo",
@@ -198,12 +192,12 @@ findMax <- function(topoFile) {
 #' @examples
 CausationNetworks <- function(nMax = 20) {
     wd <- getwd()
-    setwd(topoFileFolder)
+    # setwd(topoFileFolder)
     topoFiles <- list.files(".", pattern = ".topo")
     topoDf <-
         lapply(topoFiles, read.delim, sep = " ") %>% set_names(topoFiles)
     sapply(topoFiles, function(topoFile) {
-        setwd(gsCausation)
+        DirectoryNav("GsCausation")
         net <- topoFile %>% str_remove(".topo")
         DirectoryNav(net)
         RemoveAllFiles()
@@ -226,111 +220,3 @@ CausationNetworks <- function(nMax = 20) {
 
 }
 
-LogFileGen <- function() {
-    topoFiles <- list.files(".", ".topo")
-    df <- data.frame(
-        Files = topoFiles,
-        Influence = "No",
-        Gs = "No",
-        Coherence = "No",
-        MultiNodeCoherence = "No",
-        InfluencePlot = "No",
-        Correlation = "No",
-        CorrelationPlot = "No",
-        Simulated = "No",
-        TeamComposition = "No",
-        Strength = "No",
-        Scores = "No",
-        InteractionPlot = "No"
-    )
-    write.csv(df, "LogFile.csv", row.names = F)
-}
-
-#' Title
-#'
-#' @return
-#' @export
-#'
-#' @examples
-simulation <- function() {
-    os <- .Platform$OS.type
-    script <- "script.jl"
-    if (os == "windows")
-        script <- "scriptWindows.jl"
-    file.copy(paste0(simPackage, "/", script), ".", overwrite = T)
-    if (os != "windows") {
-        Sys.setenv(JULIA_NUM_THREADS = as.character(numThreads))
-        command <- "julia script.jl"
-        system(command)
-    }
-    else {
-        topoFiles <- list.files(".", ".topo$")
-        size <- floor(length(topoFiles) / numThreads)
-        topoList <- lapply(1:numThreads, function(x) {
-            k <- (x - 1) * size
-            id <- 1:size + k
-            if (size + k > length(topoFiles))
-                id <- id[1]:(length(topoFiles))
-            topoFiles[id] %>% paste0(collapse = " ")
-        })
-        Sys.setenv(JULIA_NUM_THREADS = as.character(1))
-        plan(multisession, workers = numThreads)
-        simulater <- future_lapply(topoList, function(x) {
-            command <- paste0("julia ", script, " ", x)
-            system(command)
-        })
-        future:::ClusterRegistry("stop")
-    }
-    # logDf <- read.csv("LogFile.csv")
-    # simulated <-
-    #     list.files(".", "_finFlagFreq.csv") %>% str_replace("_finFlagFreq.csv", ".topo")
-    # logDf$Simulated[logDf$Files %in% simulated] <- "Yes"
-    # write.csv(logDf, "LogFile.csv", row.names = F)
-
-}
-
-#' Title
-#'
-#' @param rand
-#' @param edge
-#' @param cause
-#'
-#' @return
-#' @export
-#'
-#' @examples
-SimulateBoolean <- function(rand = F,
-                            edge = F,
-                            cause = F) {
-    if (rand) {
-        setwd(randRaw)
-        sapply(netList, function(net) {
-            setwd(net)
-            simulation()
-            setwd("..")
-        })
-    }
-
-    if (edge) {
-        setwd(edgeDel)
-        sapply(netList, function(net) {
-            setwd(net)
-            simulation()
-            setwd("..")
-        })
-    }
-
-    if (cause) {
-        setwd(gsCausation)
-        sapply(netList, function(net) {
-            setwd(net)
-            simulation()
-            setwd("..")
-        })
-    }
-
-    if (!edge && !rand && !cause)
-    {
-        simulation()
-    }
-}
