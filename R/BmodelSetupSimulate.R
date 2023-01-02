@@ -20,7 +20,7 @@ BmodelSetup <- function(simPackage = "../Bmodel") {
     setwd(wd)
 }
 
-simulation <- function(setupBmodel = T, simPackage = "../Bmodel", numThreads = 3) {
+simulation <- function(setupBmodel = F, simPackage = "../Bmodel", numThreads = 3) {
     nThreads <- parallel::detectCores()
     if(numThreads > 0.8*nThreads) {
         numThreads <- round(0.8*nThreads)
