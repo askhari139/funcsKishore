@@ -2,10 +2,11 @@ Package: funcsKishore
 Type: Package
 Title: A collection of functions useful for network analysis
 Version: 0.1.2
-Author: Kishore Hari
+Authors@R: person("Kishore", "Hari", email = "askhari139@gmail.com",
+  role = c("aut", "cre"))
 Maintainer: The package maintainer <askhari139@gmail.com>
 Description: Just a bunch of functions
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true
-Imports: dplyr, readr, magrittr, ggplot2, tidyr, JuliaCall, xfun, stringr, future, future.apply, purr
+Depends: dplyr, readr, magrittr, ggplot2, tidyr, JuliaCall, xfun, stringr, future, future.apply, purr
