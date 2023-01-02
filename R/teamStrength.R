@@ -31,7 +31,7 @@ getGsVec <- function(method = c("Cluster", "Assigned", "Brute"), nTeams = 2, lma
         }) %>% unlist
         gs <- gL %>% abs %>% mean
         gW <- sapply(group, function(g) {
-            (inflMat[g, g] %>% sum)/(length(g1)*length(g2))
+            (inflMat[g, g] %>% sum)/(length(g)*length(g))
         }) %>% abs %>% mean
         c(gL, gs, gW)
     }) %>% t
