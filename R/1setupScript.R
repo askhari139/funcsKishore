@@ -18,10 +18,6 @@ packages <-
 toInstall <- packages[!(packages %in% installed)]
 sapply(toInstall, install.packages, repos = "https://cloud.r-project.org/")
 
-if (!require(funcsKishore))
-    devtools::install_github("askhari139/funcsKishore")
-packages <- c(packages, "funcsKishore")
-
 sapply(packages, library, character.only = T)
 options(lazy = F, stringsAsFactors = F)
 
