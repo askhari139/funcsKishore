@@ -5,13 +5,12 @@ getGsVec <- function(method = c("Cluster", "Assigned", "Brute"), nTeams = 2, lma
     names(teamsKey) <- c("Brute", "Cluster", "Assigned")
     GVals <- sapply(topoFiles, function(topoFile) {
         print(topoFile)
-        
         net <- topoFile %>% str_remove(".topo")
         teamsFile <- paste0(net, teamsKey[method])
         if (file.exists(teamsFile)) {
             group <- readLines(teamsFile) %>% str_split(",")
         }
-        else if(method == "Brute")
+        else if (method == "Brute")
             group <- findBruteTeams(topoFile, lmax)[[1]]
         else if (method == "Cluster")
             group <- findClusterTeams(topoFiles, nTeams, lmax)
@@ -33,14 +32,23 @@ getGsVec <- function(method = c("Cluster", "Assigned", "Brute"), nTeams = 2, lma
         gW <- sapply(group, function(g) {
             (inflMat[g, g] %>% sum)/(length(g)*length(g))
         }) %>% abs %>% mean
-        c(gL, gs, gW)
+        if (is.null(nTeams) && method == "Cluster")
+            return(c(gL, gs, gW))
+        else
+            c(gs, gW)
     }) %>% t
+    
     df <- data.frame(Network = str_remove(topoFiles, ".topo"))
-    gL <- lapply(1:length(group), function(i) {
-        sapply(1:length(group), function(j) {
-            paste0("G", i, j)
+    gL <- NULL
+    if (is.null(nTeams)) {
+        nTeamz <- sqrt(ncol(GVals)-2)
+        gL <- lapply(1:nTeamz, function(i) {
+            sapply(1:nTeamz, function(j) {
+                paste0("G", i, j)
+            })
         })
-    })
+    }
+    
     df <- cbind.data.frame(df, GVals) %>% set_names(c("Network", gL, "Gs", "GW"))
     write_csv(df, paste0("CompiledData/",method,"Teams.csv"), quote = "none")
 }
