@@ -1,3 +1,10 @@
+matTodf <- function(mat, c1) {
+    df <- data.frame(mat)
+    df <- cbind.data.frame(rownames(df), df)
+    colnames(df)[1] <- c1
+    return(df)
+}
+
 #' Title
 #'
 #' @param topoFile
@@ -122,7 +129,6 @@ InfluenceMatrix <-
             return(influence_reduced)
         }
 
-        net <- topoFile %>% str_remove(".topo")
         ls <- TopoToIntMat(topoFile)
         intmat <- ls[[1]]
         nodes <- ls[[2]]
@@ -178,10 +184,11 @@ InfluenceMatrix <-
         }
         rownames(influence_reduced) <-
             colnames(influence_reduced) <- nodes_reduced
+        
         if (write) {
             DirectoryNav("Influence")
-            write.csv(influence_mat, paste0(net, "_fullInfl.csv"))
-            write.csv(influence_reduced, paste0(net, "_reducedInfl.csv"))
+            write_csv(influence_mat %<>% matTodf("Source"), paste0(net, "_fullInfl.csv"))
+            write_csv(influence_reduced %<>% matTodf("Source"), paste0(net, "_reducedInfl.csv"))
             setwd("..")
         }
         influence_reduced
