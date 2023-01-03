@@ -50,6 +50,7 @@ getGsVec <- function(method = c("Cluster", "Assigned", "Brute"), nTeams = 2, lma
     }
     
     df <- cbind.data.frame(df, GVals) %>% set_names(c("Network", gL, "Gs", "GW"))
+    dir.create("CompiledData")
     write_csv(df, paste0("CompiledData/",method,"Teams.csv"), quote = "none")
 }
 
