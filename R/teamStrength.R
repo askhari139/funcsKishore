@@ -63,7 +63,7 @@ getGsVec <- function(method = c("Cluster", "Assigned", "Brute"), nTeams = 2, lma
     
     df <- data.frame(Network = str_remove(topoFiles, ".topo"))
     gL <- NULL
-    if (is.null(nTeams)) {
+    if (!is.null(nTeams)) {
         nTeamz <- sqrt(ncol(GVals)-2)
         gL <- lapply(1:nTeamz, function(i) {
             sapply(1:nTeamz, function(j) {
