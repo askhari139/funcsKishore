@@ -187,8 +187,8 @@ InfluenceMatrix <-
         
         if (write) {
             DirectoryNav("Influence")
-            write_csv(influence_mat %<>% matTodf("Source"), paste0(net, "_fullInfl.csv"))
-            write_csv(influence_reduced %<>% matTodf("Source"), paste0(net, "_reducedInfl.csv"))
+            write_csv(influence_mat %>% matTodf("Source"), paste0(net, "_fullInfl.csv"))
+            write_csv(influence_reduced %>% matTodf("Source"), paste0(net, "_reducedInfl.csv"))
             setwd("..")
         }
         influence_reduced
