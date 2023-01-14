@@ -13,7 +13,7 @@ getGsVec <- function(method = c("Cluster", "Assigned", "Brute"), nTeams = 2, lma
         else if (method == "Brute")
             group <- findBruteTeams(topoFile, lmax)[[1]]
         else if (method == "Cluster")
-            group <- findClusterTeams(topoFiles, nTeams, lmax)
+            group <- findClusterTeams(topoFile, nTeams, lmax)
         else {
             message(paste("Teams are not assigned for", net))
             return()

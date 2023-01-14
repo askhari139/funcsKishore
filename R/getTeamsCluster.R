@@ -8,6 +8,7 @@ teamStrengthF <- function(group, inflMat) {
 }
 
 findClusterTeams <- function(topoFile, nTeams = 2, lmax = 10, nTeamSample = 2:10) {
+    browser()
     net <- topoFile %>% str_remove(".topo")
     ls <- TopoToIntMat(topoFile)
     intmat <- ls[[1]]
