@@ -32,22 +32,24 @@ getGsVec <- function(method = c("Cluster", "Assigned", "Brute"), nTeams = 2, lma
         gW <- sapply(group, function(g) {
             (inflMat[g, g] %>% sum)/(length(g)*length(g))
         }) %>% abs %>% mean
-
+        topoDfO <- read_delim(topoFile, delim = " ", col_types = cols())
         gL <- lapply(group, function(g1) {
             sapply(group, function(g2) {
-                topoDf <- read_delim(topoFile, delim = " ", col_types = cols())
+                
                 if (length(g1) == length(g2) && all(g1 == g2)) {
-                    topoDf <- topoDf %>% filter(Source %in% g1, Target %in% g1)
+                    topoDf <- topoDfO %>% filter(Source %in% g1, Target %in% g1)
                 }
                 else {
-                    topoDf1 <- topoDf %>% filter(Source %in% g1, Target %in% g2)
-                    topoDf2 <- topoDf %>% filter(Source %in% g2, Target %in% g1)
+                    topoDf1 <- topoDfO %>% filter(Source %in% g1, Target %in% g2)
+                    topoDf2 <- topoDfO %>% filter(Source %in% g2, Target %in% g1)
                     topoDf <- rbind.data.frame(topoDf1, topoDf2)
                 }
-                if (nrow(topoDf) < 1)
-                    return(NA)
+                # if (nrow(topoDf) < 1)
+                #     return(NA)
                 write_delim(topoDf, paste0(net, "_gL.topo"), quote = "none")
-                (InfluenceMatrix(paste0(net, "_gL.topo"), lmax, write = F) %>% sum)/(length(g1)*length(g2))
+                df <- InfluenceMatrix(paste0(net, "_gL.topo"), lmax, write = F)
+                if (is.null(df)) return(NA)
+                (df %>% sum)/(length(g1)*length(g2))
             })
         }) %>% unlist
 
