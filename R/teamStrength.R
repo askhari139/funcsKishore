@@ -48,12 +48,13 @@ getGsVec <- function(method = c("Cluster", "Assigned", "Brute"), nTeams = 2, lma
                 #     return(NA)
                 write_delim(topoDf, paste0(net, "_gL.topo"), quote = "none")
                 df <- InfluenceMatrix(paste0(net, "_gL.topo"), lmax, write = F)
-                file.remove(paste0(net, "_gL.topo"))
+                # file.remove(paste0(net, "_gL.topo"))
                 if (is.null(df)) return(NA)
                 (df %>% sum)/(length(g1)*length(g2))
             })
         }) %>% unlist
-
+        glFiles <- list.files(".", "_gL.topo")
+        sapply(glFiles, file.remove)
         if (is.null(nTeams) && method == "Cluster")
             return(c(gs, gW))
         else
