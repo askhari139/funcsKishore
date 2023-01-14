@@ -69,7 +69,7 @@ getGsVec <- function(method = c("Cluster", "Assigned", "Brute"), nTeams = 2, lma
             sapply(1:nTeamz, function(j) {
                 paste0("G", i, j)
             })
-        })
+        }) %>% unlist
     }
     
     df <- cbind.data.frame(df, GVals) %>% set_names(c("Network", gL, "Gs", "GW"))
