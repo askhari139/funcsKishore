@@ -1,7 +1,7 @@
 getGsVec <- function(method = c("Cluster", "Assigned", "Brute"), nTeams = 2, lmax = 10) {
     method <- match.arg(method)
     topoFiles <- list.files(".", ".topo")
-    teamsKey <- c("BruteTeams", "teams", "AssignedTeams")
+    teamsKey <- c(".BruteTeams", ".teams", ".AssignedTeams")
     names(teamsKey) <- c("Brute", "Cluster", "Assigned")
     GVals <- sapply(topoFiles, function(topoFile) {
         print(topoFile)
