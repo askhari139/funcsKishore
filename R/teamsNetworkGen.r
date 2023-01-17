@@ -34,9 +34,9 @@ breaker <- function(vec, parts) {
     groups
 }
 
-setGroupMatrix <- function(groups, 
+setGroupMatrix <- function(groups,
                            sparsity,
-                           sparsityMatrix = NULL, 
+                           sparsityMatrix = NULL,
                            orderMatrix = NULL) {
     nGroups <- length(groups)
     nodes <- unlist(groups) %>% sort

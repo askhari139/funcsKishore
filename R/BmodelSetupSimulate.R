@@ -66,3 +66,53 @@ simulation <- function(setupBmodel = F, simPackage = "../Bmodel", numThreads = 3
         future:::ClusterRegistry("stop")
     }
 }
+
+simulateRACIPE <- function(racipePath, gkNorm = F, multiThread = T, numThreads = 8) {
+    topoFiles <- list.files(".", ".topo")
+    DirectoryNav("RACIPE")
+    sapply(topoFiles, function(x) {
+        net <- str_remove(x, ".topo")
+        file.copy(paste0("../", x), paste0(net, "_A.topo"))
+        file.copy(x, paste0(net, "_B.topo"))
+        file.copy(x, paste0(net, "_C.topo"))
+        tpFls <- str_replace(x, ".topo", paste0("_", c("A", "B", "C"), ".topo"))
+        cmds <- sapply(tpFls, function(t) {
+            paste0(racipePath, " ", t, " -num_paras 10000",
+                ifelse(multiThread, "", paste0(" -threads ", numThreads)),
+                " > ", str_replace(x, ".topo", ".log")) %>% system()
+            list.files(".", "solution_\\d+.dat") %>% sapply(file.remove)
+            list.files(".", ".cfg") %>% sapply(file.remove)
+            list.files(".", "T_test") %>% sapply(file.remove)
+            prs <- str_replace(x, ".topo", ".prs") %>% read.delim
+            nodes <- prs %>% filter(str_detect(Parameter, "Prod")) %>%
+                select(Parameter) %>% unlist %>% str_remove("Prod_of_")
+            solnNames <- c("parIndex", "nStates", "basin", nodes)
+            solnDf <- read_delim(str_replace(x, ".topo", "_solution.dat"),
+                col_types = "d", col_names = solnNames, delim = "\t")
+            parNames <- prs %>% select(Parameter) %>%
+                    unlist %>% c("parIndex", "nStates", .)
+            parDf <- read_delim(str_replace(x, ".topo", "_parameters.dat"),
+                col_types = "d", col_names = parNames, delim = "\t")
+            write_delim(parDf, str_replace(x, ".topo", "_parameters.dat"),
+                delim = "\t", quote = "none")
+            if (gkNorm) {
+                p <- sapply(nodes, function(node) {
+                    parDf %>% select(all_of(paste0(c("Prod_of_", "Deg_of_"), node))) %>%
+                        set_names(c("p", "d")) %>%
+                        mutate(r = p/d) %>%
+                        select(r) %>% unlist %>% log2
+                }) %>% data.frame %>% set_names(paste0(c("Norm_"), nodes)) %>%
+                    mutate(parIndex = parDf$parIndex)
+                solnDf <- solnDf %>%
+                    merge(p, by = "parIndex", all = T)
+                sapply(nodes, function(node) {
+                    solnDf[[node]] <<- solnDf[[node]] - solnDf[[paste0("Norm_", node)]]
+                })
+            }
+            write_delim(solnDf, str_replace(x, ".topo", "_solution.dat"),
+                delim= "\t", quote = "none")
+        })
+    })
+    
+    setwd("..")
+}
