@@ -44,8 +44,8 @@ getGsVec <- function(method = c("Cluster", "Assigned", "Brute"), nTeams = 2, lma
                     topoDf2 <- topoDfO %>% filter(Source %in% g2, Target %in% g1)
                     topoDf <- rbind.data.frame(topoDf1, topoDf2)
                 }
-                # if (nrow(topoDf) < 1)
-                #     return(NA)
+                if (nrow(topoDf) < 1)
+                    return(NA)
                 write_delim(topoDf, paste0(net, "_gL.topo"), quote = "none")
                 df <- InfluenceMatrix(paste0(net, "_gL.topo"), lmax, write = F)
                 # file.remove(paste0(net, "_gL.topo"))
