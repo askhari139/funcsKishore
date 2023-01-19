@@ -78,7 +78,7 @@ simulateRACIPE <- function(racipePath, gkNorm = F, multiThread = T, numThreads =
         tpFls <- str_replace(x, ".topo", paste0("_", c("A", "B", "C"), ".topo"))
         cmds <- sapply(tpFls, function(t) {
             paste0(racipePath, " ", t, " -num_paras 10000",
-                ifelse(multiThread, "", paste0(" -threads ", numThreads)),
+                ifelse(multiThread, paste0(" -threads ", numThreads), ""),
                 " > ", str_replace(x, ".topo", ".log")) %>% system()
             list.files(".", "solution_\\d+.dat") %>% sapply(file.remove)
             list.files(".", ".cfg") %>% sapply(file.remove)
