@@ -83,17 +83,17 @@ simulateRACIPE <- function(racipePath, gkNorm = F, multiThread = T, numThreads =
             list.files(".", "solution_\\d+.dat") %>% sapply(file.remove)
             list.files(".", ".cfg") %>% sapply(file.remove)
             list.files(".", "T_test") %>% sapply(file.remove)
-            prs <- str_replace(x, ".topo", ".prs") %>% read.delim
+            prs <- str_replace(t, ".topo", ".prs") %>% read.delim
             nodes <- prs %>% filter(str_detect(Parameter, "Prod")) %>%
                 select(Parameter) %>% unlist %>% str_remove("Prod_of_")
             solnNames <- c("parIndex", "nStates", "basin", nodes)
-            solnDf <- read_delim(str_replace(x, ".topo", "_solution.dat"),
+            solnDf <- read_delim(str_replace(t, ".topo", "_solution.dat"),
                 col_types = "d", col_names = solnNames, delim = "\t")
             parNames <- prs %>% select(Parameter) %>%
                     unlist %>% c("parIndex", "nStates", .)
-            parDf <- read_delim(str_replace(x, ".topo", "_parameters.dat"),
+            parDf <- read_delim(str_replace(t, ".topo", "_parameters.dat"),
                 col_types = "d", col_names = parNames, delim = "\t")
-            write_delim(parDf, str_replace(x, ".topo", "_parameters.dat"),
+            write_delim(parDf, str_replace(t, ".topo", "_parameters.dat"),
                 delim = "\t", quote = "none")
             if (gkNorm) {
                 p <- sapply(nodes, function(node) {
@@ -109,7 +109,7 @@ simulateRACIPE <- function(racipePath, gkNorm = F, multiThread = T, numThreads =
                     solnDf[[node]] <<- solnDf[[node]] - solnDf[[paste0("Norm_", node)]]
                 })
             }
-            write_delim(solnDf, str_replace(x, ".topo", "_solution.dat"),
+            write_delim(solnDf, str_replace(t, ".topo", "_solution.dat"),
                 delim= "\t", quote = "none")
         })
     })
