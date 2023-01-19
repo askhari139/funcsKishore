@@ -73,8 +73,8 @@ simulateRACIPE <- function(racipePath, gkNorm = F, multiThread = T, numThreads =
     sapply(topoFiles, function(x) {
         net <- str_remove(x, ".topo")
         file.copy(paste0("../", x), paste0(net, "_A.topo"))
-        file.copy(x, paste0(net, "_B.topo"))
-        file.copy(x, paste0(net, "_C.topo"))
+        file.copy(paste0("../", x), paste0(net, "_B.topo"))
+        file.copy(paste0("../", x), paste0(net, "_C.topo"))
         tpFls <- str_replace(x, ".topo", paste0("_", c("A", "B", "C"), ".topo"))
         cmds <- sapply(tpFls, function(t) {
             paste0(racipePath, " ", t, " -num_paras 10000",
