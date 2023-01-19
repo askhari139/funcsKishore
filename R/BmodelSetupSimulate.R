@@ -79,10 +79,7 @@ simulateRACIPE <- function(racipePath, gkNorm = F, multiThread = T, numThreads =
         cmds <- sapply(tpFls, function(t) {
             paste0(racipePath, " ", t, " -num_paras 10000",
                 ifelse(multiThread, paste0(" -threads ", numThreads), ""),
-                " > ", str_replace(x, ".topo", ".log")) %>% system()
-            list.files(".", "solution_\\d+.dat") %>% sapply(file.remove)
-            list.files(".", ".cfg") %>% sapply(file.remove)
-            list.files(".", "T_test") %>% sapply(file.remove)
+                " > ", str_replace(t, ".topo", ".log")) %>% system()
             prs <- str_replace(t, ".topo", ".prs") %>% read.delim
             nodes <- prs %>% filter(str_detect(Parameter, "Prod")) %>%
                 select(Parameter) %>% unlist %>% str_remove("Prod_of_")
@@ -112,6 +109,9 @@ simulateRACIPE <- function(racipePath, gkNorm = F, multiThread = T, numThreads =
             write_delim(solnDf, str_replace(t, ".topo", "_solution.dat"),
                 delim= "\t", quote = "none")
         })
+        list.files(".", "solution_\\d+.dat") %>% sapply(file.remove)
+        list.files(".", ".cfg") %>% sapply(file.remove)
+        list.files(".", "T_test") %>% sapply(file.remove)
     })
     
     setwd("..")
