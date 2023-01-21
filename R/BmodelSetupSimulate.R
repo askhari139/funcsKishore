@@ -71,9 +71,10 @@ simulateRACIPE <- function(racipePath, gkNorm = F, multiThread = T, numThreads =
     topoFiles <- list.files(".", ".topo")
     DirectoryNav("RACIPE")
     sapply(topoFiles, function(x) {
+        
+        net <- str_remove(x, ".topo")
         if(file.exists(paste0(net, "_C_solution.dat")))
             return()
-        net <- str_remove(x, ".topo")
         file.copy(paste0("../", x), paste0(net, "_A.topo"))
         file.copy(paste0("../", x), paste0(net, "_B.topo"))
         file.copy(paste0("../", x), paste0(net, "_C.topo"))
