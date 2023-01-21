@@ -103,3 +103,55 @@ plotTeams <- function(topoFile) {
     # logDf <- logDf %>% mutate(InfluencePlot = ifelse(Files == topoFile, "Yes", InfluencePlot))
     setwd("..")
 }
+
+plotCustomColors <- function(topoFiles = NULL, negCol = "#696969", 
+    T1 = "#ff0000", T2 = "#0000ff", zeroColr = "#ffffff",
+    alpha = T) {
+    # DirectoryNav("influenceTest")
+    # file.copy(paste0("../", topoFile), ".")
+    if (is.null(topoFiles)) 
+        topoFiles <- list.files(".", ".topo$")
+    if (length(topoFiles) == 0 || !all(topoFiles %>% sapply(file.exists)))
+    {
+        message("Invalid input topofiles. Do topofiles exist in your folder?")
+        return()
+
+    }
+    getGsVec(method = "Cluster", topoFiles = topoFiles)
+    sapply(topoFiles, function(topoFile) {
+        inflMat <- read_csv(paste0("Influence/", 
+            str_replace(topoFile, ".topo", "_reducedInfl.csv")))
+        teams <- readLines(str_replace(topoFile, ".topo", ".teams")) %>%
+            str_split(",")
+        teamsOrder <- teams %>% unlist
+        df <- inflMat %>% 
+            gather(key = "Target", value = "Influence", -Source) %>%
+            mutate(colorVal = negCol, alphaVal = 1)
+        if (alpha) {
+            df <- df %>%
+                mutate(alphaVal = abs(Influence),
+                    colorVal = ifelse(Source %in% teams[[1]] & 
+                        Target %in% teams[[1]], T1, colorVal)) %>%
+                mutate(colorVal = ifelse(Source %in% teams[[2]] & 
+                    Target %in% teams[[2]], T2, colorVal))
+        }
+        df <- df  %>%
+            mutate(Target = factor(Target, levels = teamsOrder),
+                Source = factor(Source, levels = teamsOrder))
+        ggplot(df, aes(x = Target, y = Source, fill = colorVal, 
+            alpha = alphaVal)) +
+            geom_tile() + 
+            theme_Publication() + 
+            scale_fill_identity() + 
+            scale_alpha_identity() +
+            theme(axis.text.x = element_text(angle = 90, 
+                hjust = 1, vjust = 0.5))
+
+        DirectoryNav("MatrixPlots")
+        ggsave(str_replace(topoFile, 
+            ".topo", "_customInfluence.png"), width = 6.5, height = 6)
+        setwd("..")
+    })
+    
+        
+}
