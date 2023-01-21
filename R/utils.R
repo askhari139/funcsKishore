@@ -1,3 +1,15 @@
+hex2dec <- function(x) {
+    x <- str_split(x, "") %>% rev
+    hexcode <- 0:15
+    hexKey <- c(0:9, letters[1:6])
+    names(hexcode) <- hexKey
+    s <- sapply(1:length(x), function(i) {
+        hexCode[x[i]]*(16^(i-1))
+    }) %>% sum
+    return(s)
+}
+
+
 RemoveAllFiles <- function() {
     filz <- list.files(".")
     sapply(filz, file.remove)
