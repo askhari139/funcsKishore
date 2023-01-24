@@ -14,7 +14,7 @@ findClusterTeams <- function(topoFile, nTeams = 2, lmax = 10, nTeamSample = 2:10
     intmat <- ls[[1]]
     nodes <- ls[[2]]
     inflMat <- InfluenceMatrix(topoFile, lmax)
-    nodes <- rownames(inflMat) %>% sort
+    nodes <- rownames(inflMat)
     df <- inflMat
     df1 <- apply(df, 2, function(x) {
         ifelse(x > 0, 1, -1)
