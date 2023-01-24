@@ -102,7 +102,7 @@ RandomNetworks <- function(numRand = 500, nSwap = 10) {
             colnames(df1) <- c("Source", "Target", "Type")
             write_delim(df1, paste0(net, "_", x, ".topo"), delim = " ")
         })
-        setwd("..")
+        setwd("../..")
     }
     setwd(wd)
 }
