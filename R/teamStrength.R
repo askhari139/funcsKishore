@@ -78,13 +78,20 @@ getGsVec <- function(method = c("Cluster", "Assigned", "Brute"), nTeams = 2, lma
     write_csv(df, paste0("CompiledData/",method,"Teams.csv"), quote = "none")
 }
 
-plotTeams <- function(topoFile) {
-    nOrder <- findTeams(topoFile) %>% unlist
+plotTeams <- function(topoFile, method = c("Cluster", "Assigned", "Brute"), lmax = 10, force = F) {
+    method <- match.arg(method)
+    teamsKey <- c(".BruteTeams", ".teams", ".AssignedTeams")
+    names(teamsKey) <- c("Brute", "Cluster", "Assigned")
+#     nOrder <- findTeams(topoFile) %>% unlist
     net <- topoFile %>% str_remove(".topo")
+    teamsFile <- paste0(net, teamsKey[method])
+        if (file.exists(teamsFile)) {
+            nOrder <- readLines(teamsFile) %>% str_split(",") %>% unlist
+        }
     ls <- TopoToIntMat(topoFile)
     intmat <- ls[[1]]
     nodes <- ls[[2]]
-    inflMat <- InfluenceMatrix(topoFile)
+    inflMat <- InfluenceMatrix(topoFile, lmax = lmax, force = force)
     df2 <- data.frame(df) %>%
         mutate(nodes1 = nodes) %>%
         gather(key = "Nodes", value = "Influence", -nodes1) %>%
