@@ -117,9 +117,10 @@ ComputePowerMatrix <- cmpfun(ComputePowerMatrix)
 InfluenceMatrix <-
     function(topoFile,
              lmax = 10,
-             write = T) {
+             write = T,
+             force = F) {
         net <- str_remove(topoFile, ".topo")
-        if (file.exists(paste0("Influence/", net, "_reducedInfl.csv"))) {
+        if (file.exists(paste0("Influence/", net, "_reducedInfl.csv")) && !force) {
             influence_reduced <-
                 read_csv(paste0("Influence/", net, "_reducedInfl.csv"),
                          col_types = cols())
