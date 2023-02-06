@@ -5,7 +5,10 @@ randMat <- function(mat, num, sparsity = 0.3)
     k <- round(n*sparsity)
     id <- sample(1:n, k)
     ed <- sign(num)
-    if (floor(num) != num) {
+    if (ed == 0) {
+        mat[id] <- 0
+    }
+    else if (floor(num) != num) {
         edOp <- ed*-1
         pure <- round(length(id)*abs(num))
         idPure <- sample(id, pure)
@@ -68,8 +71,11 @@ setGroupMatrix <- function(groups,
 netGen <- function(numNodes, groupSizes, orderMatrix = NULL, sparsityMatrix = NULL,
                    sparsity = 0.3, id = sample(1:100, 1))
 {
-    nodes <- paste0("A", 1:numNodes)
-    groups <- breaker(nodes, groupSizes)
+    names(groupSizes) <- LETTERS[1:length(groupSizes)]
+    groups <- lapply(LETTERS[1:length(groupSizes)], function(x) {
+        paste0(x, 1:groupSizes[x])
+    })
+    nodes <- unlist(groups)
     intMat <- setGroupMatrix(groups, sparsity, sparsityMatrix, orderMatrix)
     rownames(intMat) <- colnames(intMat) <- nodes
     df <- data.frame(intMat) %>% mutate(Source = rownames(intMat)) %>%
