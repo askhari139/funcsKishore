@@ -1,6 +1,6 @@
 getPeripheral <- function(topoFile) {
     ls <- TopoToIntMat(topoFile)
-    intMat <- ls[[1]]
+    intmat <- ls[[1]]
     nodes <- ls[[2]]
     signal <- which(apply(intmat, 2, function(x) {
         all(x == 0)
