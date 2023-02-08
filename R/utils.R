@@ -1,3 +1,32 @@
+getPeripheral <- function(topoFile) {
+    ls <- TopoToIntMat(topoFile)
+    intMat <- ls[[1]]
+    nodes <- ls[[2]]
+    signal <- which(apply(intmat, 2, function(x) {
+        all(x == 0)
+    }))
+    output <- which(apply(intmat, 1, function(x) {
+        all(x == 0)
+    }))
+    secondary_signal <- which(apply(intmat, 2, function(x) {
+        if (length(signal) != 0) {
+            all(x[-signal] == 0)
+        } else {
+            F
+        }
+    }))
+    secondary_output <- which(apply(intmat, 1, function(x) {
+        if (length(output) != 0) {
+            all(x[-output] == 0)
+        } else {
+            F
+        }
+    }))
+    nonEssentials <-
+        c(signal, output, secondary_signal, secondary_output) %>% unique
+    nodes[-nonEssentials]
+}
+
 hex2dec <- function(x) {
     x <- str_split(x, "") %>% rev
     hexcode <- 0:15
