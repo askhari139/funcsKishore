@@ -78,35 +78,40 @@ getGsVec <- function(method = c("Cluster", "Assigned", "Brute"), nTeams = 2, lma
     write_csv(df, paste0("CompiledData/",method,"Teams.csv"), quote = "none")
 }
 
-plotTeams <- function(topoFile, method = c("Cluster", "Assigned", "Brute"), lmax = 10, force = F) {
+plotTeams <- function(topoFile, method = c("Cluster", "Assigned", "Brute"), 
+    lmax = 10, force = F, write = F) {
     method <- match.arg(method)
     teamsKey <- c(".BruteTeams", ".teams", ".AssignedTeams")
     names(teamsKey) <- c("Brute", "Cluster", "Assigned")
 #     nOrder <- findTeams(topoFile) %>% unlist
     net <- topoFile %>% str_remove(".topo")
     teamsFile <- paste0(net, teamsKey[method])
-        if (file.exists(teamsFile)) {
-            nOrder <- readLines(teamsFile) %>% str_split(",") %>% unlist
-        }
+    if (file.exists(teamsFile)) {
+        nOrder <- readLines(teamsFile) %>% str_split(",") %>% unlist
+    }
+    else {
+        print("GTFO")
+        return()
+    }
     ls <- TopoToIntMat(topoFile)
     intmat <- ls[[1]]
     nodes <- ls[[2]]
-    inflMat <- InfluenceMatrix(topoFile, lmax = lmax, force = force)
-    df2 <- data.frame(df) %>%
-        mutate(nodes1 = nodes) %>%
+    inflMat <- InfluenceMatrix(topoFile, lmax = lmax, force = force, write = write)
+    df2 <- data.frame(inflMat) %>%
+        mutate(nodes1 = rownames(.)) %>%
         gather(key = "Nodes", value = "Influence", -nodes1) %>%
         mutate(nodes1 = factor(nodes1, levels = nOrder), Nodes = factor(Nodes, levels = nOrder))
-    textSize <- ifelse(length(nOrder) > 28, 0.8, 1)
+    textSize <- ifelse(length(nOrder) > 28, 0.2, 1)
     p <- ggplot(df2, aes(x = Nodes, y = nodes1, fill = Influence)) + geom_tile() +
         theme_Publication() + scale_fill_gradient2(low = "blue", high = "red", limits = c(-1,1)) +
         theme(axis.title.x = element_blank(), axis.title.y = element_blank(),
-              axis.text.x = element_text(angle = 90),
+              axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),
               axis.text = element_text(size = rel(textSize)),
               legend.position = "right",
               legend.direction = "vertical", legend.key.height = unit(0.5, "in"))
 
     DirectoryNav("MatrixPlots")
-    ggsave(str_replace(topoFile, ".topo", "_group.png"), width = 7, height = 6)
+    ggsave(paste0(net, "_", lmax, ".png"), width = 7.5, height = 6)
     # logDf <- logDf %>% mutate(InfluencePlot = ifelse(Files == topoFile, "Yes", InfluencePlot))
     setwd("..")
 }
