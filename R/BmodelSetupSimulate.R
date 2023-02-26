@@ -119,3 +119,35 @@ simulateRACIPE <- function(racipePath, gkNorm = F, multiThread = T, numThreads =
     
     setwd("..")
 }
+
+simulateNetworkBmodel <- function(topoFile, simpackage = "./Bmodel",
+        nInit = 100000, nIter = 1000, mode = "Async", stateRep = -1, 
+        randSim = "false", discrete = "false", shubham = T) {
+    wd <- getwd()
+    if (!file.exists(topoFile)) {
+        print("topoFile not found!")
+        return()
+    }
+    setwd(simpackage)
+    simpackage <- getwd()
+    setwd(wd)
+    script <- c()
+    script <- c(script, paste0("include(", simpackage, "/bmodel.jl)"))
+    script <- c(script, 
+        paste0("y1 = @elapsed x = bmodel_reps(\"", 
+            topoFile, "\"",
+            "; nInit = ", nInit, ", nIter = ", nIter, 
+            ", mode = \",", mode, "\", stateRep =", stateRep, 
+            ", randSim = ", shubham, ", shubham= = true, discrete = ", discrete, ")"))
+    if (shubham)
+    script <- c(script, 
+        paste0("y2 = @elapsed x = bmodel_reps(\"", 
+            topoFile, "\"",
+            "; nInit = ", nInit, ", nIter = ", nIter, 
+            ", mode = \",", mode, "\", stateRep =", stateRep, 
+            ", randSim = ", shubham, ", shubham= false, discrete = ", discrete, ")"))
+    script <- c(script, 
+        paste0("print(\"", topoFile, "\", \" - \", y1, \" seconds \", y2, \" seconds.\""))
+    writeLines(script, "dummy.jl")
+    system("julia dummy.jl")
+}
