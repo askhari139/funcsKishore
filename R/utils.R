@@ -1,3 +1,11 @@
+cleanTopo <- function(topoFile, delim = "") { # remove un-necessary hiphens, use single space delimiter
+    df <- read.delim(topoFile, sep = delim) %>%
+        mutate(Source = Source %>% str_replace_all(regex("\\W+"), ""),
+               Target = Target %>% str_replace_all(regex("\\W+"), ""))
+    write_delim(df, topoFile, delim = " ", quote = "none")
+    
+}
+
 getPeripheral <- function(topoFile) {
     ls <- TopoToIntMat(topoFile)
     intmat <- ls[[1]]
