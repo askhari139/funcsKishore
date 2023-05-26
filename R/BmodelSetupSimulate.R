@@ -12,7 +12,7 @@ BmodelSetup <- function(simPackage = "../Bmodel") {
     script <- readLines("script.jl")
     script[1] <- paste0("include(\"", simPackage, "/bmodel.jl\")")
     writeLines(script, "script.jl")
-    
+
     script <- readLines("scriptWindows.jl")
     script[1] <- paste0("include(\"", simPackage, "/bmodel.jl\")")
     writeLines(script, "scriptWindows.jl")
@@ -71,7 +71,7 @@ simulateRACIPE <- function(racipePath, gkNorm = F, multiThread = T, numThreads =
     topoFiles <- list.files(".", ".topo")
     DirectoryNav("RACIPE")
     sapply(topoFiles, function(x) {
-        
+
         net <- str_remove(x, ".topo")
         if(file.exists(paste0(net, "_C_solution.dat")))
             return()
@@ -116,13 +116,13 @@ simulateRACIPE <- function(racipePath, gkNorm = F, multiThread = T, numThreads =
         list.files(".", ".cfg") %>% sapply(file.remove)
         list.files(".", "T_test") %>% sapply(file.remove)
     })
-    
+
     setwd("..")
 }
 
 simulateNetworkBmodel <- function(topoFile, simpackage = "./Bmodel",
-        nInit = "100000", nIter = "1000", mode = "Async", stateRep = -1, 
-        randSim = "false", discrete = "false") {
+        nInit = "100000", nIter = "1000", mode = "Async", stateRep = -1,
+        randSim = "false", discrete = "false", nLevels = 2) {
     wd <- getwd()
     if (!file.exists(topoFile)) {
         print("topoFile not found!")
@@ -133,19 +133,21 @@ simulateNetworkBmodel <- function(topoFile, simpackage = "./Bmodel",
     setwd(wd)
     script <- c()
     script <- c(script, paste0("include(\"", simpackage, "/bmodel.jl\")"))
-    script <- c(script, 
-        paste0('y1 = @elapsed x = bmodel_reps("', 
+    script <- c(script,
+        paste0('y1 = @elapsed x = bmodel_reps("',
             topoFile, "\"",
-            "; nInit = ", nInit, ", nIter = ", nIter, 
-            ", mode = \"", mode, "\", stateRep = ", stateRep, 
-            ", randSim = ", randSim, ", shubham = true, discrete = ", discrete, ")"))
-    script <- c(script, 
-        paste0("y2 = @elapsed x = bmodel_reps(\"", 
+            "; nInit = ", nInit, ", nIter = ", nIter,
+            ", mode = \"", mode, "\", stateRep = ", stateRep,
+            ", randSim = ", randSim, ", shubham = true, discrete = ",
+            discrete,"nLevels= ", nLevels,  ")"))
+    script <- c(script,
+        paste0("y2 = @elapsed x = bmodel_reps(\"",
             topoFile, "\"",
-            "; nInit = ", nInit, ", nIter = ", nIter, 
-            ", mode = \"", mode, "\", stateRep = ", stateRep, 
-            ", randSim = ", randSim, ", shubham = false, discrete = ", discrete, ")"))
-    script <- c(script, 
+            "; nInit = ", nInit, ", nIter = ", nIter,
+            ", mode = \"", mode, "\", stateRep = ", stateRep,
+            ", randSim = ", randSim, ", shubham = false, discrete = ",
+            discrete, ")"))
+    script <- c(script,
         paste0("print(\"", topoFile, "\", \" - \", y1, \" seconds \", y2, \" seconds.\")"))
     writeLines(script, "dummy.jl")
     system("julia dummy.jl")
