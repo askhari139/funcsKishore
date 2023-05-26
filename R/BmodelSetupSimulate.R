@@ -139,7 +139,7 @@ simulateNetworkBmodel <- function(topoFile, simpackage = "./Bmodel",
             "; nInit = ", nInit, ", nIter = ", nIter,
             ", mode = \"", mode, "\", stateRep = ", stateRep,
             ", randSim = ", randSim, ", shubham = true, discrete = ",
-            discrete,"nLevels= ", nLevels,  ")"))
+            discrete,", nLevels= ", nLevels,  ")"))
     script <- c(script,
         paste0("y2 = @elapsed x = bmodel_reps(\"",
             topoFile, "\"",
