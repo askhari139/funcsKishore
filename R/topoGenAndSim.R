@@ -25,7 +25,7 @@ Swap <- cmpfun(Swap)
 #' @export
 #'
 #' @examples
-UniquePerms2 <- function(x, max = 10, nSwap = 10) {
+UniquePerms2 <- function(x, max = 10, nSwap = 10, useful = T) {
     N <- length(x)
     n1 <- sum(x == 1)
     n2 <- sum(x == 2)
@@ -50,6 +50,11 @@ UniquePerms2 <- function(x, max = 10, nSwap = 10) {
         nSamp <- x
         sapply(1:nSwap, function(x) {
             p <- sample(1:N, 2)
+            if (useful) {
+                while (nSamp[p[1]] == nSamp[p[2]]) {
+                    p <- sample(1:N, 2)
+                }
+            }
             nSamp <<- Swap(nSamp, p)
         })
         nNew <- nSamp
@@ -75,7 +80,7 @@ UniquePerms2 <- cmpfun(UniquePerms2)
 #' @export
 #'
 #' @examples
-RandomNetworks <- function(numRand = 500, nSwap = 10) {
+RandomNetworks <- function(numRand = 500, nSwap = 10, useful = F) {
     wd <- getwd()
     # setwd(topoFileFolder)
     topoFiles <- list.files(".", pattern = ".topo")
@@ -95,7 +100,7 @@ RandomNetworks <- function(numRand = 500, nSwap = 10) {
         DirectoryNav(net)
         write_delim(df, "wild.topo", delim = " ", quote = "none")
         onetwo <- df[, 1:2]
-        rand_orders <- UniquePerms2(wt, max = numRand, nSwap = nSwap)
+        rand_orders <- UniquePerms2(wt, max = numRand, nSwap = nSwap, useful = useful)
         dummy <- sapply(1:nrow(rand_orders), function(x) {
             y <- rand_orders[x,]
             df1 <- cbind.data.frame(onetwo, y)
