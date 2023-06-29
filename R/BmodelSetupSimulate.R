@@ -120,7 +120,7 @@ simulateRACIPE <- function(racipePath, gkNorm = F, multiThread = T, numThreads =
     setwd("..")
 }
 
-simulateNetworkBmodel <- function(topoFile, simpackage = "./Bmodel",
+simulateNetworkBmodel <- function(topoFile, simpackage = "./Bmodel", shubham = "false",
         nInit = "100000", nIter = "1000", mode = "Async", stateRep = -1,
         randSim = "false", discrete = "false", nLevels = 2) {
     wd <- getwd()
@@ -133,22 +133,22 @@ simulateNetworkBmodel <- function(topoFile, simpackage = "./Bmodel",
     setwd(wd)
     script <- c()
     script <- c(script, paste0("include(\"", simpackage, "/bmodel.jl\")"))
+    # script <- c(script,
+    #     paste0('y1 = @elapsed x = bmodel_reps("',
+    #         topoFile, "\"",
+    #         "; nInit = ", nInit, ", nIter = ", nIter,
+    #         ", mode = \"", mode, "\", stateRep = ", stateRep,
+    #         ", randSim = ", randSim, ", shubham = true, discrete = ",
+    #         discrete,", nLevels= ", nLevels,  ")"))
     script <- c(script,
-        paste0('y1 = @elapsed x = bmodel_reps("',
+        paste0("y1 = @elapsed x = bmodel_reps(\"",
             topoFile, "\"",
             "; nInit = ", nInit, ", nIter = ", nIter,
             ", mode = \"", mode, "\", stateRep = ", stateRep,
-            ", randSim = ", randSim, ", shubham = true, discrete = ",
-            discrete,", nLevels= ", nLevels,  ")"))
-    script <- c(script,
-        paste0("y2 = @elapsed x = bmodel_reps(\"",
-            topoFile, "\"",
-            "; nInit = ", nInit, ", nIter = ", nIter,
-            ", mode = \"", mode, "\", stateRep = ", stateRep,
-            ", randSim = ", randSim, ", shubham = false, discrete = ",
+            ", randSim = ", randSim, ", shubham = ", shubham," discrete = ",
             discrete, ")"))
     script <- c(script,
-        paste0("print(\"", topoFile, "\", \" - \", y1, \" seconds \", y2, \" seconds.\")"))
+        paste0("print(\"", topoFile, "\", \" - \", y1, \" seconds.\")"))
     writeLines(script, "dummy.jl")
     system("julia dummy.jl")
 }
