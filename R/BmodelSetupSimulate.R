@@ -122,7 +122,7 @@ simulateRACIPE <- function(racipePath, gkNorm = F, multiThread = T, numThreads =
 
 simulateNetworkBmodel <- function(topoFile, simpackage = "./Bmodel", shubham = "false",
         nInit = "100000", nIter = "1000", mode = "Async", stateRep = -1,
-        randSim = "false", discrete = "false", nLevels = 2) {
+        randSim = "false", discrete = "false", nLevels = 2, vaibhav = "false") {
     wd <- getwd()
     if (!file.exists(topoFile)) {
         print("topoFile not found!")
@@ -145,8 +145,8 @@ simulateNetworkBmodel <- function(topoFile, simpackage = "./Bmodel", shubham = "
             topoFile, "\"",
             "; nInit = ", nInit, ", nIter = ", nIter,
             ", mode = \"", mode, "\", stateRep = ", stateRep,
-            ", randSim = ", randSim, ", shubham = ", shubham," discrete = ",
-            discrete, ")"))
+            ", randSim = ", randSim, ", shubham = ", shubham, " discrete = ",
+            discrete, " vaibhav = ", vaibhav, ")"))
     script <- c(script,
         paste0("print(\"", topoFile, "\", \" - \", y1, \" seconds.\")"))
     writeLines(script, "dummy.jl")
