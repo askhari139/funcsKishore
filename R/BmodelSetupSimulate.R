@@ -146,7 +146,7 @@ simulateNetworkBmodel <- function(topoFile, simpackage = "./Bmodel", shubham = "
             "; nInit = ", nInit, ", nIter = ", nIter,
             ", mode = \"", mode, "\", stateRep = ", stateRep,
             ", randSim = ", randSim, ", shubham = ", shubham, ", discrete = ",
-            discrete, ", vaibhav = ", vaibhav, ")"))
+            discrete, ", nLevels = ", nLevels, ", vaibhav = ", vaibhav, ")"))
     script <- c(script,
         paste0("print(\"", topoFile, "\", \" - \", y1, \" seconds.\")"))
     writeLines(script, "dummy.jl")
