@@ -7,9 +7,10 @@ idFileGen <- function(topo) {
 }
 
 getInit <- function(topo, paramAdditional = NULL, valueAdditional = NULL) {
-    initFormat <- data.frame(parameter = c("input_folder_name", "otput_folder_name", 
+    paramOrder <- c("input_folder_name", "otput_folder_name",
         "input_filenames", "num_runs", "num_simulations", "maxtime", "constant_node_count",
-        "time_step", "updation_rule"), 
+        "time_step", "updation_rule")
+    initFormat <- data.frame(parameter = paramOrder, 
         value = c(".", ".", str_remove(topo, ".topo"), 3, 10000, 1000, 0, 0.1, 2))
     if (!is.null(paramAdditional) && !is.null(valueAdditional) && length(paramAdditional) == length(valueAdditional)) {
         ids <- paramAdditional %in% initFormat$parameter
@@ -18,6 +19,7 @@ getInit <- function(topo, paramAdditional = NULL, valueAdditional = NULL) {
             filter(!parameter %in% paramAdditional[ids]) %>%
             bind_rows(data.frame(parameter = paramAdditional[ids], value = valueAdditional[ids]))
     }
+    initFormat <- initFormat %>% arrange(match(parameter, paramOrder))
     write_delim(initFormat, "init.txt", delim = " ", quote = "none")
 }
 
