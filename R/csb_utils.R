@@ -39,6 +39,7 @@ processCsbOutput <- function(topo, nodeOrder = NULL) {
         df <- df %>%
             mutate(across(everything(), function(x) as.character(ifelse(x == -1, 0, x)))) %>%
             unite("State", everything(), sep = "") %>%
+            mutate(State = paste0("'", State, "'")) %>%
             group_by(State) %>%
             summarise(Count = n()) %>%
             mutate(Prob = Count/sum(Count)) %>%
