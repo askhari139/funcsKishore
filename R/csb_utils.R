@@ -7,11 +7,11 @@ idFileGen <- function(topo) {
 }
 
 getInit <- function(topo, paramAdditional = NULL, valueAdditional = NULL) {
-    paramOrder <- c("input_folder_name", "otput_folder_name",
+    paramOrder <- c("input_folder_name", "output_folder_name",
         "input_filenames", "num_runs", "num_simulations", "maxtime", "constant_node_count",
         "time_step", "updation_rule")
     initFormat <- data.frame(parameter = paramOrder, 
-        value = c(".", ".", str_remove(topo, ".topo"), 3, 10000, 1000, 0, 0.1, 2))
+        value = c("input", "output", str_remove(topo, ".topo"), 3, 10000, 1000, 0, 0.1, 2))
     if (!is.null(paramAdditional) && !is.null(valueAdditional) && length(paramAdditional) == length(valueAdditional)) {
         ids <- paramAdditional %in% initFormat$parameter
         if(any(ids))
