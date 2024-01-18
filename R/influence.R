@@ -19,7 +19,7 @@ TopoToIntMat <-
     function(topoFile,
              plotOut = F,
              nOrder = NULL) {
-        df <- read.delim(topoFile, sep = " ", stringsAsFactors = F)
+        df <- read.delim(topoFile, sep = "", stringsAsFactors = F)
         df <- df %>%
             mutate(Type = ifelse(Type == 2,-1, 1))
 
