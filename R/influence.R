@@ -21,7 +21,7 @@ TopoToIntMat <-
              nOrder = NULL) {
         df <- read.delim(topoFile, sep = "", stringsAsFactors = F)
         df <- df %>%
-            mutate(Type = ifelse(Type == 2,-1, 1))
+            mutate(Type = ifelse(Type == 2,-1, Type))
 
         nodes <- unique(c(df$Source, df$Target)) %>%
             sort(decreasing = T)
