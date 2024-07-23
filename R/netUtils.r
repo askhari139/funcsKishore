@@ -83,7 +83,7 @@ getImpurities <- function(topoFile){
     })
 }
 
-getLoopData <- function(topoFile, size_limit = NULL) {
+getLoopData <- function(topoFile, size_limit = NULL, netx = netx) {
     topoDf <- read_delim(topoFile, delim = " ", show_col_types = F) %>% 
         mutate(Sign = ifelse(Type == 2, -1, Type), 
         Edges = paste0(Source, "_", Target))
