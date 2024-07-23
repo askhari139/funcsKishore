@@ -87,6 +87,7 @@ getLoopData <- function(topoFile, size_limit = NULL) {
     topoDf <- read_delim(topoFile, delim = " ", show_col_types = F) %>% 
         mutate(Sign = ifelse(Type == 2, -1, Type), 
         Edges = paste0(Source, "_", Target))
+    use_virtualenv("r-funcsKishore")
     netx <- import("networkx")
     g <- netx$from_pandas_edgelist(topoDf, source = 'Source', target = 'Target', 
         edge_attr = "Sign", create_using = netx$DiGraph())
