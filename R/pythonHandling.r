@@ -14,7 +14,7 @@ install_pyFK <- function(envname="r-funcsKishore", reinstall = F) {
     use_virtualenv(envname)
 }
 install_pyFK()
-netx <- import("networkx",  delay_load = T)
+netx <- import("networkx",  delay_load = F)
 # use_virtualenv("r-funcsKishore")
 
 
