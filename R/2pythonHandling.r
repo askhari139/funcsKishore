@@ -2,7 +2,7 @@ pythonLoc <- virtualenv_starter()
 
 use_python(pythonLoc)
 pyBuiltins <- import_builtins()
-install_pyFK <- function(envname="r-funcsKishore", reinstall = F) {
+install_pyFK <- function(envname="r-funcsKishore", reinstall = T) {
     if (reinstall && virtualenv_exists(envname)) {
         virtualenv_remove(envname)
     }
@@ -14,7 +14,7 @@ install_pyFK <- function(envname="r-funcsKishore", reinstall = F) {
     use_virtualenv(envname)
 }
 install_pyFK()
-netx <- import("networkx",  delay_load = F)
+# netx <- import("networkx",  delay_load = F)
 # use_virtualenv("r-funcsKishore")
 
 
