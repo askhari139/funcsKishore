@@ -89,6 +89,7 @@ getLoopData <- function(topoFile, size_limit = NULL) {
         Edges = paste0(Source, "_", Target))
     use_virtualenv("r-funcsKishore")
     netx <- import("networkx")
+    pyBuiltins <- import_builtins()
     g <- netx$from_pandas_edgelist(topoDf, source = 'Source', target = 'Target', 
         edge_attr = "Sign", create_using = netx$DiGraph())
     # g <- netx$DiGraph()
