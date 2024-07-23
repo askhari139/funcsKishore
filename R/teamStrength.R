@@ -129,7 +129,7 @@ plotTeams <- function (topoFile, method = c("Cluster", "Assigned", "Brute"),
 
 plotCustomColors <- function(topoFiles = NULL, negCol = "#696969", 
     T1 = "#ff0000", T2 = "#0000ff", zeroColr = "#ffffff",
-    alpha = T, textSize = NULL, w = 7.5, figureFolder = "Figures",) {
+    alpha = T, textSize = NULL, w = 7.5, figureFolder = "Figures") {
     # DirectoryNav("influenceTest")
     # file.copy(paste0("../", topoFile), ".")
     if (is.null(topoFiles)) 
