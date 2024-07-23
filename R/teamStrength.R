@@ -78,16 +78,18 @@ getGsVec <- function(method = c("Cluster", "Assigned", "Brute"), nTeams = 2, lma
     write_csv(df, paste0("CompiledData/",method,"Teams.csv"), quote = "none")
 }
 
-plotTeams <- function(topoFile, method = c("Cluster", "Assigned", "Brute"), 
-    lmax = 10, force = F, write = F) {
+plotTeams <- function (topoFile, method = c("Cluster", "Assigned", "Brute"), 
+    lmax = 10, force = F, write = F, textSize = NULL, w = 7.5, 
+    figureFolder = "Figures", saveFig = T, returnPlot = F) 
+{
     method <- match.arg(method)
     teamsKey <- c(".BruteTeams", ".teams", ".AssignedTeams")
     names(teamsKey) <- c("Brute", "Cluster", "Assigned")
-#     nOrder <- findTeams(topoFile) %>% unlist
     net <- topoFile %>% str_remove(".topo")
     teamsFile <- paste0(net, teamsKey[method])
     if (file.exists(teamsFile)) {
-        nOrder <- readLines(teamsFile) %>% str_split(",") %>% unlist
+        nOrder <- readLines(teamsFile) %>% str_split(",") %>% 
+            unlist
     }
     else {
         print("GTFO")
@@ -96,29 +98,38 @@ plotTeams <- function(topoFile, method = c("Cluster", "Assigned", "Brute"),
     ls <- TopoToIntMat(topoFile)
     intmat <- ls[[1]]
     nodes <- ls[[2]]
-    inflMat <- InfluenceMatrix(topoFile, lmax = lmax, force = force, write = write)
-    df2 <- data.frame(inflMat) %>%
-        mutate(nodes1 = rownames(.)) %>%
-        gather(key = "Nodes", value = "Influence", -nodes1) %>%
-        mutate(nodes1 = factor(nodes1, levels = nOrder), Nodes = factor(Nodes, levels = nOrder))
-    textSize <- ifelse(length(nOrder) > 28, 0.2, 1)
-    p <- ggplot(df2, aes(x = Nodes, y = nodes1, fill = Influence)) + geom_tile() +
-        theme_Publication() + scale_fill_gradient2(low = "blue", high = "red", limits = c(-1,1)) +
-        theme(axis.title.x = element_blank(), axis.title.y = element_blank(),
-              axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),
-              axis.text = element_text(size = rel(textSize)),
-              legend.position = "right",
-              legend.direction = "vertical", legend.key.height = unit(0.5, "in"))
-
-    DirectoryNav("MatrixPlots")
-    ggsave(paste0(net, "_", lmax, ".png"), width = 7.5, height = 6)
-    # logDf <- logDf %>% mutate(InfluencePlot = ifelse(Files == topoFile, "Yes", InfluencePlot))
-    setwd("..")
+    inflMat <- InfluenceMatrix(topoFile, lmax = lmax, force = force, 
+        write = write)
+    inflMat <- inflMat[nOrder, nOrder]
+    df2 <- data.frame(inflMat) %>% mutate(nodes1 = rownames(.)) %>% 
+        gather(key = "Nodes", value = "Influence", -nodes1) %>% 
+        mutate(nodes1 = factor(nodes1, levels = nOrder), Nodes = factor(Nodes, 
+            levels = nOrder))
+    if (is.null(textSize))
+        textSize <- min(0.9, 5*(w-2.5)/length(nOrder))
+    p <- ggplot(df2, aes(x = Nodes, y = nodes1, fill = Influence)) + 
+        geom_tile() + theme_Publication() + scale_fill_gradient2(low = "blue", 
+        high = "red", limits = c(-1, 1)) + theme(axis.title.x = element_blank(), 
+        axis.title.y = element_blank(), axis.text.x = element_text(angle = 90, 
+            hjust = 1, vjust = 0.5), axis.text = element_text(size = rel(textSize)), 
+        legend.position = "right", legend.direction = "vertical", 
+        legend.key.height = unit(0.5, "in"))
+    if (saveFig) {
+        DirectoryNav(figureFolder)
+        ggsave(paste0(net, "_", lmax, ".png"), width = w, height = w - 
+            1.5)
+        setwd("..")
+    }
+    if (returnPlot)
+        return(p)
+    return(NULL)
 }
+
+
 
 plotCustomColors <- function(topoFiles = NULL, negCol = "#696969", 
     T1 = "#ff0000", T2 = "#0000ff", zeroColr = "#ffffff",
-    alpha = T) {
+    alpha = T, textSize = NULL, w = 7.5, figureFolder = "Figures",) {
     # DirectoryNav("influenceTest")
     # file.copy(paste0("../", topoFile), ".")
     if (is.null(topoFiles)) 
@@ -147,6 +158,8 @@ plotCustomColors <- function(topoFiles = NULL, negCol = "#696969",
                 mutate(colorVal = ifelse(Source %in% teams[[2]] & 
                     Target %in% teams[[2]], T2, colorVal))
         }
+        if (is.null(textSize))
+            textSize <- min(0.9, 5*(w-2.5)/length(teamsOrder))
         df <- df  %>%
             mutate(Target = factor(Target, levels = teamsOrder),
                 Source = factor(Source, levels = teamsOrder))
@@ -159,9 +172,9 @@ plotCustomColors <- function(topoFiles = NULL, negCol = "#696969",
             theme(axis.text.x = element_text(angle = 90, 
                 hjust = 1, vjust = 0.5))
 
-        DirectoryNav("MatrixPlots")
+        DirectoryNav(figureFolder)
         ggsave(str_replace(topoFile, 
-            ".topo", "_customInfluence.png"), width = 6.5, height = 6)
+            ".topo", "_customInfluence.png"), width = w, height = w-1)
         setwd("..")
     })
     

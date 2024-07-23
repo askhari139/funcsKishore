@@ -1,39 +1,3 @@
-cleanTopo <- function(topoFile, delim = "") { # remove un-necessary hiphens, use single space delimiter
-    df <- read.delim(topoFile, sep = delim) %>%
-        mutate(Source = Source %>% str_replace_all(regex("\\W+"), ""),
-               Target = Target %>% str_replace_all(regex("\\W+"), ""))
-    write_delim(df, topoFile, delim = " ", quote = "none")
-    
-}
-
-getPeripheral <- function(topoFile) {
-    ls <- TopoToIntMat(topoFile)
-    intmat <- ls[[1]]
-    nodes <- ls[[2]]
-    signal <- which(apply(intmat, 2, function(x) {
-        all(x == 0)
-    }))
-    output <- which(apply(intmat, 1, function(x) {
-        all(x == 0)
-    }))
-    secondary_signal <- which(apply(intmat, 2, function(x) {
-        if (length(signal) != 0) {
-            all(x[-signal] == 0)
-        } else {
-            F
-        }
-    }))
-    secondary_output <- which(apply(intmat, 1, function(x) {
-        if (length(output) != 0) {
-            all(x[-output] == 0)
-        } else {
-            F
-        }
-    }))
-    nonEssentials <-
-        c(signal, output, secondary_signal, secondary_output) %>% unique
-    nodes[-nonEssentials]
-}
 
 hex2dec <- function(x) {
     x <- str_split(x, "") %>% rev
@@ -189,12 +153,8 @@ discretize <- function(net)
     print(net)
 }
 
-SecondarySignals <- function(topoDf, sig) {
-    targets <- topoDf %>% filter(Source == sig) %>%
-        select(Target) %>% unlist
-    secSigs <- c()
 
-}
+
 
 getEMSONodes <- function(topoFile)
 {
@@ -311,16 +271,3 @@ multiFactorCorrelation <-
 
     }
 
-
-mergeNets <- function(nets, nam) {
-    setwd(topoFileFolder)
-    df <- lapply(nets, function(net) {
-        read.delim(paste0(net, ".topo"), sep = "") %>%
-            mutate(Source = tolower(Source),
-                   Target = tolower(Target))
-    }) %>% reduce(rbind.data.frame) %>% distinct
-    write_delim(df,
-                paste0(nam, ".topo"),
-                delim = " ",
-                quote = "none")
-}
