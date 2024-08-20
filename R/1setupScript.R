@@ -16,7 +16,8 @@ packages <-
         "devtools",
         "grid",
         "ggthemes",
-        "reticulate"
+        "reticulate",
+        "GGally"
     )
 toInstall <- packages[!(packages %in% installed)]
 sapply(toInstall, install.packages, repos = "https://cloud.r-project.org/")
