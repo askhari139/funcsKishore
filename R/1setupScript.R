@@ -16,7 +16,7 @@ packages <-
         "devtools",
         "grid",
         "ggthemes",
-        "reticulate",
+        # "reticulate",
         "GGally"
     )
 toInstall <- packages[!(packages %in% installed)]
@@ -25,13 +25,13 @@ sapply(toInstall, install.packages, repos = "https://cloud.r-project.org/")
 sapply(packages, library, character.only = T)
 options(lazy = F, stringsAsFactors = F, repos = "https://cloud.r-project.org/")
 
-python_packages <- 
-    c(
-        "networkx",
-        "scipy",
-        "numpy",
-        "pandas"
-    )
+# python_packages <- 
+#     c(
+#         "networkx",
+#         "scipy",
+#         "numpy",
+#         "pandas"
+#     )
 
 
 # # Sys.setenv(JULIA_NUM_THREADS = as.character(numThreads))

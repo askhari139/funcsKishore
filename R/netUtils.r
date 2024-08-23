@@ -83,35 +83,35 @@ getImpurities <- function(topoFile){
     })
 }
 
-getLoopData <- function(topoFile, size_limit = NULL) {
-    if (file.exists(str_replace(topoFile, ".topo", "_directedLoops.csv"))) {
-        return(read_csv(str_replace(topoFile, ".topo", "_directedLoops.csv")))
-    }
-    topoDf <- read_delim(topoFile, delim = " ", show_col_types = F) %>% 
-        mutate(Sign = ifelse(Type == 2, -1, Type), 
-        Edges = paste0(Source, "_", Target))
-    use_virtualenv("r-funcsKishore")
-    netx <- import("networkx")
-    pyBuiltins <- import_builtins()
-    g <- netx$from_pandas_edgelist(topoDf, source = 'Source', target = 'Target', 
-        edge_attr = "Sign", create_using = netx$DiGraph())
-    # g <- netx$DiGraph()
-    cycles <- g %>%
-        netx$simple_cycles(length_bound = size_limit) %>%
-        pyBuiltins$list()
-    loopSigns <- sapply(cycles, function(cycle) {
-        cycle <- c(cycle, cycle[1])
-        edges <- data.frame(Source = cycle[1:(length(cycle)-1)], 
-            Target = cycle[2:length(cycle)]) %>%
-            mutate(Edges = paste0(Source, "_", Target))
-        edgeSigns <- topoDf %>% 
-            filter(Edges %in% edges$Edges) %>%
-            pull(Sign)
-        ifelse(prod(edgeSigns) == -1, "N", "P")
-    })
-    loopLengths <- sapply(cycles, length)
-    cycleSeq <- sapply(cycles, paste0, collapse = "_")
-    df <- data.frame(Cycles = cycleSeq, Nature = loopSigns, Edge_count = loopLengths)
-    write_csv(df, str_replace(topoFile, ".topo", "_directedLoops.csv"), quote = "none")
-    return(df)
-}
+# getLoopData <- function(topoFile, size_limit = NULL) {
+#     if (file.exists(str_replace(topoFile, ".topo", "_directedLoops.csv"))) {
+#         return(read_csv(str_replace(topoFile, ".topo", "_directedLoops.csv")))
+#     }
+#     topoDf <- read_delim(topoFile, delim = " ", show_col_types = F) %>% 
+#         mutate(Sign = ifelse(Type == 2, -1, Type), 
+#         Edges = paste0(Source, "_", Target))
+#     use_virtualenv("r-funcsKishore")
+#     netx <- import("networkx")
+#     pyBuiltins <- import_builtins()
+#     g <- netx$from_pandas_edgelist(topoDf, source = 'Source', target = 'Target', 
+#         edge_attr = "Sign", create_using = netx$DiGraph())
+#     # g <- netx$DiGraph()
+#     cycles <- g %>%
+#         netx$simple_cycles(length_bound = size_limit) %>%
+#         pyBuiltins$list()
+#     loopSigns <- sapply(cycles, function(cycle) {
+#         cycle <- c(cycle, cycle[1])
+#         edges <- data.frame(Source = cycle[1:(length(cycle)-1)], 
+#             Target = cycle[2:length(cycle)]) %>%
+#             mutate(Edges = paste0(Source, "_", Target))
+#         edgeSigns <- topoDf %>% 
+#             filter(Edges %in% edges$Edges) %>%
+#             pull(Sign)
+#         ifelse(prod(edgeSigns) == -1, "N", "P")
+#     })
+#     loopLengths <- sapply(cycles, length)
+#     cycleSeq <- sapply(cycles, paste0, collapse = "_")
+#     df <- data.frame(Cycles = cycleSeq, Nature = loopSigns, Edge_count = loopLengths)
+#     write_csv(df, str_replace(topoFile, ".topo", "_directedLoops.csv"), quote = "none")
+#     return(df)
+# }
