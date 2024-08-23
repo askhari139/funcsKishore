@@ -1,25 +1,18 @@
 
-randMat <- function(mat, num, sparsity = 0.3)
+randMat <- function(mat, num, impurity = 0.0, density = 0.3)
 {
     n <- length(mat)
-    k <- round(n*sparsity)
+    k <- round(n*density)
     id <- sample(1:n, k)
     ed <- sign(num)
-    if (ed == 0) {
-        mat[id] <- 0
+    if (impurity != 0) {
+        idImpure <- sample(id, round(k*impurity))
     }
-    else if (floor(num) != num) {
-        edOp <- ed*-1
-        pure <- round(length(id)*abs(num))
-        idPure <- sample(id, pure)
-        idImpure <- id[!(id %in% idPure)]
-        mat[idPure] <- ed
+    edOp <- ed*-1
+    mat[id] <- ed
+    if (impurity != 0) {
         mat[idImpure] <- edOp
-    }
-    else {
-        mat[id] <- ed
-    }
-    
+    } 
     mat
 }
 randMat <- cmpfun(randMat)
@@ -37,15 +30,25 @@ breaker <- function(vec, parts) {
     groups
 }
 
+checkInteger <- function(x) {
+    if (floor(x) == x)
+}
+
 setGroupMatrix <- function(groups,
-                           sparsity,
-                           sparsityMatrix = NULL,
+                           density,
+                           impurity,
+                           densityMatrix = NULL,
+                           impurityMatrix = NULL,
                            orderMatrix = NULL) {
     nGroups <- length(groups)
     nodes <- unlist(groups) %>% sort
     nNodes <- length(nodes)
-    if (is.null(sparsityMatrix)) {
-        sparsityMatrix <- rep(sparsity, nGroups*nGroups) %>% 
+    if (is.null(densityMatrix)) {
+        densityMatrix <- rep(density, nGroups*nGroups) %>% 
+            matrix(ncol = nGroups)
+    }
+    if (is.null(impurityMatrix)) {
+        impurityMatrix <- rep(impurity, nGroups*nGroups) %>% 
             matrix(ncol = nGroups)
     }
     if (is.null(orderMatrix)) {
@@ -61,32 +64,49 @@ setGroupMatrix <- function(groups,
         lapply(1:nGroups, function(j) {
             g1 <- groups[[i]]
             g2 <- groups[[j]]
-            randMat(intMat[g1, g2], orderMatrix[i,j],
-                    sparsityMatrix[i,j])
+            m <- randMat(intMat[g1, g2], orderMatrix[i,j],impurityMatrix[i,j], 
+                    densityMatrix[i,j])
         }) %>% reduce(cbind)
     }) %>% reduce(rbind)
     intMat
 }
 
-netGen <- function(numNodes, groupSizes, orderMatrix = NULL, sparsityMatrix = NULL,
-                   sparsity = 0.3, id = sample(1:100, 1))
+netGen <- function(groupSizes, numNodes = 0, orderMatrix = NULL, 
+                   densityMatrix = NULL,density = 0.3, 
+                   impurityMatrix = NULL, impurity = 0.0, 
+                   id = sample(1:100, 1), key = "ArtNet")
 {
+    intCheck <- all(floor(groupSizes) == groupSizes)
+    if ((numNodes == 0) & !intCheck) {
+        stop("Either provide an integer vector of group sizes or a number of nodes")
+    }
+    else if (intCheck & (numNodes == 0)) {
+        numNodes <- sum(groupSizes)
+    }
+    else {
+        if ((sum(groupSizes) != 1) & (sum(groupSizes) != numNodes)) {
+            groupSizes <- groupSizes/sum(groupSizes)
+        }
+        groupSizes <- round(numNodes*groupSizes)
+        groupSizes[length(groupSizes)] <- numNodes - sum(groupSizes[-length(groupSizes)])
+    }
     names(groupSizes) <- LETTERS[1:length(groupSizes)]
     groups <- lapply(LETTERS[1:length(groupSizes)], function(x) {
         paste0(x, 1:groupSizes[x])
     })
     nodes <- unlist(groups)
-    intMat <- setGroupMatrix(groups, sparsity, sparsityMatrix, orderMatrix)
+    intMat <- setGroupMatrix(groups, density, impurity, densityMatrix, 
+        impurityMatrix, orderMatrix)
     rownames(intMat) <- colnames(intMat) <- nodes
     df <- data.frame(intMat) %>% mutate(Source = rownames(intMat)) %>%
         gather(key = "Target", value = "Type", -Source) %>%
         filter(Type != 0) %>% mutate(Type = ifelse(Type == 1, 1, 2))
-    netName <- paste0("ArtNet_", id, "_", length(groupSizes), ".topo")
+    netName <- paste0(key, "_", id, "_", length(groupSizes), ".topo")
     write_delim(df, netName, " ")
     groupLines <- groups %>% sapply(function(x) {
         x %>% paste0(collapse = ",")
     })
     writeLines(groupLines, 
-               paste0("ArtNet_", id, "_", length(groupSizes), ".AssignedTeams"))
+               paste0(key, "_", id, "_", length(groupSizes), ".AssignedTeams"))
 }
 netGen <- cmpfun(netGen)
