@@ -1,4 +1,4 @@
-netx <- import("networkx")
+# netx <- import("networkx")
 
 cleanTopo <- function(topoFile, delim = "") { # remove un-necessary hiphens, use single space delimiter
     df <- read.delim(topoFile, sep = delim) %>%
