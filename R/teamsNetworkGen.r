@@ -30,9 +30,9 @@ breaker <- function(vec, parts) {
     groups
 }
 
-checkInteger <- function(x) {
-    if (floor(x) == x)
-}
+# checkInteger <- function(x) {
+#     if (floor(x) == x)
+# }
 
 setGroupMatrix <- function(groups,
                            density,
