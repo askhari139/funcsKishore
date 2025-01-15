@@ -20,7 +20,7 @@ findClusterTeams <- function(topoFile, nTeams = 2, lmax = 10, nTeamSample = 2:10
         ifelse(x > 0, 1, -1)
     })
     df1 <- cbind(df1, t(df1))
-    hc <- hclust(dist(df1))
+    hc <- hclust(dist(df1), method = "ward.D2")
     if (is.null(nTeams)) {
         gs <- sapply(nTeamSample, function(nT) {
             clust <- cutree(hc, nT)
