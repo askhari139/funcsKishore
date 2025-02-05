@@ -149,6 +149,10 @@ InfluenceMatrix <-
 
         influence_mat <- res
         colnames(influence_mat) <- rownames(influence_mat) <- nodes
+        DirectoryNav("Influence")
+        if(write) {
+            write_csv(influence_mat %>% matTodf("Source"), paste0(net, "_fullInfl.csv"))
+        }
         signal <- which(apply(intmat, 2, function(x) {
             all(x == 0)
         }))
@@ -181,17 +185,17 @@ InfluenceMatrix <-
             nodes_reduced <- nodes %>% str_replace_all(regex("\\W+"), "")
         }
         if (length(nodes_reduced) < 2) {
-            return()
+            setwd("..")
+            print(paste0(net, ": core is too small for reduced influence"))
+            return(influence_mat)
         }
         rownames(influence_reduced) <-
             colnames(influence_reduced) <- nodes_reduced
-        
         if (write) {
-            DirectoryNav("Influence")
-            write_csv(influence_mat %>% matTodf("Source"), paste0(net, "_fullInfl.csv"))
             write_csv(influence_reduced %>% matTodf("Source"), paste0(net, "_reducedInfl.csv"))
-            setwd("..")
+            
         }
+        setwd("..")
         influence_reduced
     }
 InfluenceMatrix <- cmpfun(InfluenceMatrix)
