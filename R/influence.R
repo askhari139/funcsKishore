@@ -138,7 +138,14 @@ InfluenceMatrix <-
             rownames(influence_reduced) <- rn
             return(influence_reduced)
         }
-
+        topoDf <- read.delim(topoFile, sep = "", stringsAsFactors = F)
+        peri <- peripherals(topoDf)
+        nonEssentials <- c()
+        while(length(peri[[2]]) > 0) {
+            topoDf <- peri[[1]]
+            nonEssentials <- c(nonEssentials, peri[[2]])
+            peri <- peripherals(topoDf)
+        }
         ls <- TopoToIntMat(topoFile)
         intmat <- ls[[1]]
         nodes <- ls[[2]]
@@ -161,14 +168,6 @@ InfluenceMatrix <-
         DirectoryNav("Influence")
         if(write) {
             write_csv(influence_mat %>% matTodf("Source"), paste0(net, "_fullInfl.csv"))
-        }
-        topoDf <- read.delim(topoFile, sep = "", stringsAsFactors = F)
-        peri <- peripherals(topoDf)
-        nonEssentials <- c()
-        while(length(peri[[2]]) > 0) {
-            topoDf <- peri[[1]]
-            nonEssentials <- c(nonEssentials, peri[[2]])
-            peri <- peripherals(topoDf)
         }
         if (length(nonEssentials)) {
             influence_reduced <- influence_mat[-nonEssentials,-nonEssentials]
