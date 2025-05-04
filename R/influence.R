@@ -102,6 +102,15 @@ ComputePowerMatrix <- function(mat, power) {
 }
 ComputePowerMatrix <- cmpfun(ComputePowerMatrix)
 
+
+peripherals <- function(topoDf) {
+  nodes <- topoDf %>% select(Source, Target) %>% unlist %>% unique
+  peripherals <- data.frame(nodes = nodes, inSource = nodes %in% topoDf$Source, 
+                       inTarget = nodes %in% topoDf$Target) %>%
+            filter(!(inSource & inTarget)) %>% pull(nodes)
+  list(topoDf %>% filter(!(Source %in% peripherals | Target %in% peripherals)), peripherals)
+}
+
 #' Title
 #'
 #' @param net
@@ -153,28 +162,14 @@ InfluenceMatrix <-
         if(write) {
             write_csv(influence_mat %>% matTodf("Source"), paste0(net, "_fullInfl.csv"))
         }
-        signal <- which(apply(intmat, 2, function(x) {
-            all(x == 0)
-        }))
-        output <- which(apply(intmat, 1, function(x) {
-            all(x == 0)
-        }))
-        secondary_signal <- which(apply(intmat, 2, function(x) {
-            if (length(signal) != 0) {
-                all(x[-signal] == 0)
-            } else {
-                F
-            }
-        }))
-        secondary_output <- which(apply(intmat, 1, function(x) {
-            if (length(output) != 0) {
-                all(x[-output] == 0)
-            } else {
-                F
-            }
-        }))
-        nonEssentials <-
-            c(signal, output, secondary_signal, secondary_output) %>% unique
+        topoDf <- read.delim(topoFile, sep = "", stringsAsFactors = F)
+        peri <- peripherals(topoDf)
+        nonEssentials <- c()
+        while(length(peri[[2]]) > 0) {
+            topoDf <- peri[[1]]
+            nonEssentials <- c(nonEssentials, peri[[2]])
+            peri <- peripherals(topoDf)
+        }
         if (length(nonEssentials)) {
             influence_reduced <- influence_mat[-nonEssentials,-nonEssentials]
             nodes_reduced <- nodes[-nonEssentials] %>%
