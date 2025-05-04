@@ -149,6 +149,11 @@ InfluenceMatrix <-
         ls <- TopoToIntMat(topoFile)
         intmat <- ls[[1]]
         nodes <- ls[[2]]
+        if (length(nonEssentials)) {
+            nonEssentials <- sapply(nonEssentials, function(x) {
+                which(nodes == x)
+            })
+        }
         intmax <- intmat
         intmax[which(intmax == -1)] <- 1
         res <- 0
