@@ -1,0 +1,410 @@
+---
+title: "Results"
+output:
+  bookdown::html_document2:
+    toc: true
+    theme: united
+  bookdown::pdf_book:
+    toc: true
+  html_document:
+    toc: true
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,warning=F)
+
+```
+
+
+```{r echo=F}
+source("~/Desktop/PostDoc/MultiAxial/Networks/plotFuncs.r")
+library(ComplexHeatmap)
+stateKey <- c(-1, -0.5, 0.5, 1)
+sKey <- c(-1,1)
+```
+
+
+```{r echo=F}
+getTeams <- function(nodes) {
+    nodeData <- read_csv("allNodes.nodes", show_col_types = F)
+    nodeData <- nodeData %>% filter(Node %in% nodes)
+    teamLabs <- nodeData$Team %>% unique
+    teams <- lapply(teamLabs, function(x) {
+        nodeData %>% filter(Team == x) %>% pull(Node)
+    })
+    names(teams) <- teamLabs
+    return(teams)
+}
+
+getScores <- function(df, teams) {
+    labs <- names(teams)
+    lapply(labs, function(x) {
+        df[[x]] <<- select(df, all_of(teams[[x]])) %>% rowMeans()
+    })
+    df$emScore <- df$EMT_Mes - df$EMT_Epi
+    df$stemScore <- df$Stem_Act - df$Stem_Inh
+    return(df %>% mutate(emScore = emScore/max(emScore), stemScore = stemScore/max(stemScore)))
+}
+
+
+getD <- function(topoFile, formalism = c("ising", "shubham", "racipe")) {
+    nodeFile <- topoFile %>% str_replace(".topo", "_nodes.txt")
+    isingFile <- topoFile %>% str_replace(".topo", "_finFlagFreq.csv")
+    shubhamFile <- topoFile %>% str_replace(".topo", "_shubham_2_finFlagFreq.csv")
+    nodes <- readLines(nodeFile)
+    teams <- getTeams(nodes)
+    if (formalism == "ising") 
+        d <- read_csv(isingFile, show_col_types = F) %>%
+            separate(states, nodes, sep = "_", remove = T, convert = T) %>%
+            mutate(across(all_of(nodes), .fns = function(x) {
+                sKey[x+1]
+            })) %>%
+            getScores(teams)
+    # d1 %>% filter(emScore < 0.5) %>% pull(Avg0) %>% sum
+    if (formalism == "shubham")
+        d <- read_csv(shubhamFile, show_col_types = F) %>%
+            separate(states, nodes, sep = "_", remove = T, convert = T) %>%
+            mutate(across(all_of(nodes), .fns = function(x) {
+                stateKey[x+1]
+            })) %>%    
+            getScores(teams)
+    # d1s %>% filter(emScore < 0.5) %>% pull(Avg0) %>% sum
+    if (formalism == "racipe")
+        d <- formatRACIPE(topoFile) %>%
+            mutate(across(all_of(nodes), function(x) {ifelse(x>0, 1, 0)})) %>%
+            select(all_of(nodes)) %>%
+            getScores(teams)
+    # (d1R %>% filter(emScore < 0.5) %>% nrow)/nrow(d1R)
+    return(d)
+}
+
+expandDf <- function(df, n = 1000) {
+    df %>% mutate(Count = round(Avg0*n)) %>%
+        uncount(Count)
+}
+```
+
+## Key points of literature
+
+- HA has two widely accepted forms - LMM and HMM. LMW is pro inflammatory, while HMM is antiinflammatory. HMM also seems to enhance regeneration. HMM forms the crosslinks within ECM which makes the ECM soft. HMM also has a higher hydration capacity which enhances the ECM softness.
+- Free HMM in solution gets endocytosed and gets degraded into LMM. 
+So the disruption of ECM upon wound releasing HMM HA into the solution could lead 
+to degradation of HA and induction of an inflammatory reaction. If Inflammation enhances EMT, ZEB1 can induce the production of HA (and collagen?), leading to forming soft ECM. If HA is not produced/not crosslinked within ECM, you get fibrosis. For this theory to work, we need the following elements
+    - Wounds should have fibroblasts that are ready to take over
+    - How does LMM induce inflammation? They are not cytokines.
+    - Inflammation should induce EMT
+    - EMT induction should enhance the production of collagen, HA and other crosslinkers needed for soft ECM formation. (Which is a point of contest because EMT seems to induce the formation of stiff ECM with high elastic modulus. Need to figure out where these things differ)
+    - How does MET happen?
+
+### HA turnover
+HA turnover rates are high. There is a constant production and degradation happening.
+
+- Degradation via membrane proteins like HYALs and TMEM2 extracellularly
+    - TMEM2 based degradation has been shown to release TGFß stored in ECM extracellularly, which in turn leads to mitochondria remodelling and immune system activation [paper](https://www.sciencedirect.com/science/article/pii/S009286742400638X?via%3Dihub)
+- Endocytosis followed by either storage or degradation by CD44
+- 
+
+## Process
+
+wound -> free HA -> fibroblasts degrading the HA -> LMM HA inducing inflammation and stemness in fibroblasts -> inflammation inducing EMT -> wound closure, HA production, collagen production -> A soft ECM with stem cells that can reform the epithelium
+
+## Network and simulations
+
+Starting with the 26 node EMT network, we included additional interactions corresponding to HA and stemness regulations. 
+Simulated these networks using 2-level and 4-level boolean simulation formalisms as well as RACIPE. The network is as follows:
+
+![EMT-Stemness-HA Network](fullNet.png)
+
+Note that there is a negative feedback involving HA via CD44 (highlighted in red) that represents the internalizaion of *free* HA by CD44 and subsequent degradation. 
+This feedback is crucial in this network to obtain the right stemness properties. We currently do not distinguish between free HA and HA bound to the ECM. 
+That distinction could be made when including ECM components.
+
+```{r echo=F,warning=F,message=F,results='hide'}
+ising <- list(getD("original.topo", "ising") %>% mutate(Net = "Original"), 
+    getD("original_compressed.topo", "ising") %>% mutate(Net = "Original_compressed"),
+    getD("combined2.topo", "ising") %>% mutate(Net = "Combined"),
+    getD("combined_compressed.topo", "ising") %>% mutate(Net = "Combined_compressed"), 
+    getD("combined_compressed_neg.topo", "ising") %>% mutate(Net = "With_HA"),
+    getD("original_compressed_neg.topo", "ising") %>% mutate(Net = "Without_HA")) %>% 
+    bind_rows() %>%
+    mutate(Net = factor(Net, levels = c("Original", "Combined", 
+        "Original_compressed", "Combined_compressed", "With_HA", "Without_HA")),
+        Model = "2-level")
+
+shubham <- list(getD("original.topo", "shubham") %>% mutate(Net = "Original"),
+    getD("original_compressed.topo", "shubham") %>% mutate(Net = "Original_compressed"),
+    getD("combined2.topo", "shubham") %>% mutate(Net = "Combined"),
+    getD("combined_compressed.topo", "shubham") %>% mutate(Net = "Combined_compressed"),
+    getD("combined_compressed_neg.topo", "shubham") %>% mutate(Net = "With_HA"),
+    getD("original_compressed_neg.topo", "shubham") %>% mutate(Net = "Without_HA")) %>% 
+    bind_rows() %>%
+    mutate(Net = factor(Net, levels = c("Original", "Combined", 
+        "Original_compressed", "Combined_compressed", "With_HA", "Without_HA")),
+        Model = "4-level")
+
+racipe <- list(getD("original.topo", "racipe") %>% mutate(Net = "Original"),
+    getD("original_compressed.topo", "racipe") %>% mutate(Net = "Original_compressed"),
+    getD("combined2.topo", "racipe") %>% mutate(Net = "Combined"),
+    getD("combined_compressed.topo", "racipe") %>% mutate(Net = "Combined_compressed"),
+    getD("combined_compressed_neg.topo", "racipe") %>% mutate(Net = "Combined_compressed_neg")) %>% 
+    bind_rows() %>%
+    mutate(Net = factor(Net, levels = c("Original", "Combined", 
+        "Original_compressed", "Combined_compressed", "Combined_compressed_neg")))
+```
+
+## Results
+```{r echo=F}
+nodes <- readLines("original_compressed_neg_nodes.txt")
+teams <- getTeams(nodes)
+Epi <- teams$EMT_Epi
+Mes <- teams$EMT_Mes
+StemPos <- teams$Stem_Act
+StemNeg <- teams$Stem_Inh
+
+```
+
+The set of nodes in the network are as follows:
+- Epithelial Nodes: `r Epi`
+- Mesenchymal Nodes: `r Mes`
+- Stemess Promoting nodes: `r StemPos`
+- Stemness Inhibiting nodes: `r StemNeg`
+- HA associated nodes: `r teams$HA`
+
+We define EMT score as the difference in the mean expression levels of M and E nodes (M-E). Similarly stemness score as Stemness promoting - inhibiting. 
+Stemness score is not as straight forward since higher stemness is achieved at an intermediate levels of OCT4, so we plot that as well. 
+Note that intermediate levels of OCT4 and stemness score are achieved upon the addition of the negative feedback between HA and CD44 to the network. 
+How does stemness score change with expression levels of OCT4?
+
+```{r echo = F}
+df <- rbind.data.frame(ising, shubham) %>%
+    filter(str_detect(Net, "With")) %>%
+    mutate(Net = factor(Net, levels = c("Without_HA", "With_HA")))
+ggplot(df %>% expandDf, aes(x = stemScore, y = OCT4)) +
+    geom_density2d_filled() +
+    facet_grid(Model~Net) +
+    theme_Publication() +
+    labs(x = "Stemness Score", y = "OCT4 Expression") +
+    theme(legend.key.width = unit(1, "cm"), legend.position = "none")
+```
+
+In 2-level formalism intermediate expression levels are not allowed, but it is clearly seen in 4-level formalism that as stemness score approaches zero (intermediate score), we see intermediate levels of OCT4 expression. 
+Thus, near zero stemness score is desirable.
+
+Comparing the steady state frequencies in different regions of EMTscore-stemness score space. 
+```{r echo = F, warning=F}
+ggplot(df %>% expandDf, aes(x = emScore, y = stemScore)) +
+    geom_density2d_filled() +
+    facet_grid(Model~Net) +
+    theme_Publication() +
+    labs(x = "EM Score", y = "Stemness Score") +
+    theme(legend.key.width = unit(1, "cm"), legend.position = "none")
+```
+
+There is a clear increase in stability of states with intermediate stemness score upon adding HA related interactions to the network. However, that does not reflect as cleanly in OCT4 expression. 
+
+```{r echo=F, warning=F}
+ggplot(df %>% expandDf, aes(x = emScore, y = OCT4)) +
+    geom_density2d_filled() +
+    facet_grid(Model~Net) +
+    theme_Publication() +
+    labs(x = "EM Score", y = "OCT4 Expression") +
+    theme(legend.key.width = unit(1, "cm"), legend.position = "none")
+```
+
+
+
+
+<!-- 
+
+### Ising formalism
+
+```{r echo=FALSE, warning=FALSE, eval = F}
+### Density of state frequency
+ggplot(ising %>% expandDf, aes(x = emScore, y = stemScore)) +
+    geom_density2d_filled() +
+    facet_wrap(~Net, ncol = 2) +
+    # scale_color_viridis_c() +
+    theme_Publication() +
+    labs(x = "EMScore", y = "StemScore", title = "State Frequency") +
+    theme(legend.key.width = unit(1, "cm"), legend.position = "none")
+# ggsave("Score_plots_dens_ising.png", width = 10, height = 10)
+
+### Density of states
+ggplot(ising, aes(x = emScore, y = stemScore)) +
+    geom_density2d_filled() +
+    facet_wrap(~Net, ncol = 2) +
+    # scale_color_viridis_c() +
+    theme_Publication() +
+    labs(x = "EMScore", y = "StemScore", title = "States") +
+    theme(legend.key.width = unit(1, "cm"), legend.position = "none")
+# ggsave("Score_plots_states_ising.png", width = 10, height = 10)
+```
+
+### Multilevel
+
+```{r echo=FALSE, warning=FALSE, eval = F}
+ggplot(shubham %>% expandDf, aes(x = emScore, y = stemScore)) +
+    geom_density2d_filled() +
+    facet_wrap(~Net, ncol = 2) +
+    # scale_color_viridis_c() +
+    theme_Publication() +
+    labs(x = "EMScore", y = "StemScore", title = "State Frequency") +
+    theme(legend.key.width = unit(1, "cm"), legend.position = "none")
+ggsave("Score_plots_dens_shubham.png", width = 10, height = 10)
+
+ggplot(shubham, aes(x = emScore, y = stemScore)) +
+    geom_density2d_filled() +
+    facet_wrap(~Net, ncol = 2) +
+    # scale_color_viridis_c() +
+    theme_Publication() +
+    labs(x = "EMScore", y = "StemScore", title = "States") +
+    theme(legend.key.width = unit(1, "cm"), legend.position = "none")
+ggsave("Score_plots_states_shubham.png", width = 10, height = 10)
+
+ggplot(shubham %>% expandDf, aes(x = emScore, y = CD44)) +
+    geom_density2d_filled() +
+    facet_wrap(~Net, ncol = 2) +
+    # scale_color_viridis_c() +
+    theme_Publication() +
+    labs(x = "EMScore", y = "OCT4", title = "State Frequency") +
+    theme(legend.key.width = unit(1, "cm"), legend.position = "none")
+# ggsave("Score_plots_oct4_dens_shubham.png", width = 10, height = 10)
+
+ggplot(shubham, aes(x = emScore, y = CD44)) +
+    geom_density2d_filled() +
+    facet_wrap(~Net, ncol = 2) +
+    # scale_color_viridis_c() +
+    theme_Publication() +
+    labs(x = "EMScore", y = "OCT4", title = "State") +
+    theme(legend.key.width = unit(1, "cm"), legend.position = "none")
+# ggsave("Score_plots_oct4_states_shubham.png", width = 10, height = 10)
+```
+
+
+
+
+## RACIPE Dataset
+
+### Score Plots
+
+```{r echo=FALSE, warning=FALSE, eval = F}
+### Density of state frequency
+
+ggplot(racipe, aes(x = emScore, y = stemScore)) +
+    geom_density2d_filled() +
+    facet_wrap(~Net, ncol = 2) +
+    # scale_color_viridis_c() +
+    theme_Publication() +
+    labs(x = "EMScore", y = "StemScore", title = "States") +
+    theme(legend.key.width = unit(1, "cm"), legend.position = "none")
+# ggsave("Score_plots_states_ising.png", width = 10, height = 10)
+```
+
+
+### Individual molecules
+
+```{r echo=FALSE, warning=FALSE, eval = F}
+### Density of state frequency
+
+ggplot(racipe, aes(x = HA, y = OCT4)) +
+    geom_point() +
+    facet_wrap(~Net, ncol = 2) +
+    # scale_color_viridis_c() +
+    theme_Publication() +
+    labs(x = "HA", y = "OCT4", title = "States") +
+    theme(legend.key.width = unit(1, "cm"), legend.position = "none")
+# ggsave("Score_plots_states_ising.png", width = 10, height = 10)
+```
+
+```{r eval=F}
+df <- read_csv("combined_compressed_neg_formatRacipe.csv", show_col_types = F) %>%
+    select(CD44, HA, OCT4, ZEB) %>%
+    mutate(ID = 1:nrow(.)) %>%
+    gather(key = "Nodes", value = "Expression", -ID, -HA)
+ggplot(df, aes(x = HA, y = Expression)) +
+    geom_point() +
+    facet_wrap(~Nodes, scales = "free") +
+    theme_Publication()
+```
+-->
+
+## Further modelling plans 
+
+Wound healing requires the following major components
+- Cellular processes that include Inflammation, cell migration, stemness, ECM manipulation and proliferation. Companion to all this is EMT 
+- Cellular components that include fibroblasts, keratinocytes, immune cells, endothelial cells and platelets
+- Environmental factors include HA, Collagen, crosslinker proteins and glycans, Eschar (comprised of blood clot) and cytokines
+- Stages include
+    - Pre wound concentration of cytokines and growth factors, and immune cells available on site that can trigger immediate inflammation upon wound formation
+    - Post wound recruitment of immune cells that triggers inflammation positive feedback loops
+    - Migration and remodelling of keratinocytes
+    - proliferation
+
+## Next Steps
+- Current model treats the HA as unbound to ECM, except maybe for the activation of TGFß. How to include HA ECM dynamics?
+- Inlcude the ECM effects: 
+    - https://pmc.ncbi.nlm.nih.gov/articles/PMC4452027/
+    - https://pmc.ncbi.nlm.nih.gov/articles/PMC8037024/
+
+## Useful data papers
+
+- Kevin J Chalut    
+    - [Increased HA leads to mouse tip regeneration](https://www.biorxiv.org/content/10.1101/2024.12.04.626830v1.full) - sc RNAseq data on mouse tip regeneration in regenerating and non-regenerating wounds, experiments enhanching HA production, degradation and HAPLN1 enrichment and their role in regulating regeneration, data not yet available
+- Jessica L Whited
+    - [Transcriptomic landscape of blastema niche in axolotl limb regeneration](https://www.nature.com/articles/s41467-018-07604-0) - scRNAseq data on axolotl limb regeneration at different time points : 3dpa, 14dpa, 23dpa. The paper says blastema scRNAseq, but the data has multiple cell types, so could be useful. [GSE121737](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE121737)
+    - [Adrenergic signaling stimulates body-wide stem cell activation for limb regeneration](https://www.biorxiv.org/content/10.1101/2021.12.29.474455v3) Multiple versions over 4 years. RNA seq and ATAC seq data. [GSE276204](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE276204), [GSE232080](https://ww3.ncbi.xyz/geo/query/acc.cgi?acc=GSE232080)
+    - [Complete transcriptome of axolotl](https://pmc.ncbi.nlm.nih.gov/articles/PMC5419050/#S12) - Normal axolotl, not wounded. 42 samples from 16 tissues relevant for regeneration. Functional annotation of different genes has also been provided, with a pipeline for high confidence functional annotation given in the paper. [GSE92429](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE92429)
+- Elly M Tanaka
+    - [Molecular basis for positional memory](https://www.biorxiv.org/content/10.1101/2023.10.27.564423v1) - scRNAseq data on axolotl limb regeneration. The paper identifies hadn2 and shh signalling as key players. All samples are 14/15 dpa, collected around the blastema in the anterior and posterior sections. Not the best data to study HA or ECM effects in wound healing, but could be useful. Also not published for some reason. [GSE284768](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE284768)
+- MRL Mouse datasets
+    - [Comparative transcriptome analysis of different mouse strains including MRL/Mpj](https://pmc.ncbi.nlm.nih.gov/articles/PMC4647819/#fn-group1) 
+- [Spatiotemporal analysis of accute and chronic wound healing](https://www.cell.com/cell-stem-cell/fulltext/S1934-5909%2824%2900412-0) - ST RNAseq data on human skin wounds, doesn't talk about HA or the ECM much, but has ample data on accute wounds, chronic wounds (ulcers) at multiple time and space points. Focus on re-epithelialization - numbers: [GSE241132](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE241132) - Acute wound scRNAseq, [GSE265972](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE265972) - Chronic wound, [GSE241124](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE241124) - Spatial seq, and [GSE218430](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE218430) - mouse wound single cell and CHIRP seq data at wound 3.
+- [Zebra fish fin regeneration impaired by excercise mediated HA degradation](https://www.biorxiv.org/content/10.1101/2024.11.15.623835v1.full) - Swimming after fin wound leads to HA degradation, reduced YAP nuclear localization and reduced regeneration. scRNAseq shows a downregulation of ECM genes including has2 and HAPLN1. Blastema only it looks like. bulk RNAseq - [GSE293062](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE293062)
+- [MRL mouse regeneration for different tissue types](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?token=utmbmwkohdqvnwz&acc=GSE64624) - Microarray data on MRL mouse regeneration
+- [Axolotl limb regeneration day-wise data](https://academic.oup.com/proteincell/article/12/1/57/6746933?login=false#386884040) - scRNAseq data on axolotl limb regeneration at different time points. PRJNA589484 (Raw data needs to be processed)
+- [MRL mouse vs C57BL/6J, BALB/c mice strains tissue wise methylation data]() Paper can't be found, but data is here at 
+
+- [Axolotl Aged limbs vs juvenile limbs regeneration - could be useful to show the ageing connection](https://pubmed.ncbi.nlm.nih.gov/39575453/) - 10dpa data from juvenile (8months) and adult (8 years) limb. They see regeneration in juvenile limbs but not adult limbs. This is a great control case comparision. [GSE237864](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE237864) - count matrices available.
+- [Mouse fetal skin regeneration](https://www.tandfonline.com/doi/full/10.2217/epi-2016-0068?scroll=top&needAccess=true) Methylome and transcriptome of  C57BL/6 strain mouse fetal skin wound. "The genes associated with inflammatory response and hyaluronate degradation showed increased DNA methylation before the transition, while those involved in embryonic morphogenesis, neuron differentiation and synapse functions did so after." Transcriptome is mass microarray of 24K genes, bulk. E15, E16, E18, E19 and adult dorsal skin samples are analyzed. [GSE67878](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE67878)
+
+
+## Pontential sources of complete regeneration data
+- Axolotl limb regeneration
+- Zebra fish fin regeneration
+- MRL mouse regeneration
+- Humal oral wound healing
+- MRL mouse ear hole regeneration
+- Mouse fetal skin
+
+## References for links
+- ZEB activates HAS2
+- HA activates CD44
+- CD44 inhibits HA through internalization
+- TGFb1 signalling activates HAPLN1
+- HAPLN1 crosslinks HA and collagen
+- HAPLN1 and TGFb regulate collagen deposition
+- EMT-stemness interactions
+- EMT-proliferation interactions
+- HYAL1 gets activated by TGFb1 signalling
+
+## Supporting statements and citations for the importance of HA in wound regeneration
+- Fetal fibroblasts form HA rich ECMs, which adult fibroblasts do not. IL10 is a key molecule seen in fetal wounds but not in adult wounds, and there is evidence that IL10 can induce HA production in fibroblasts. [paper](https://faseb.onlinelibrary.wiley.com/doi/full/10.1096/fj.201600856R). IL10->STAT3->HAS2->HA
+- [Hyaluronan turnover by keratinocytes](https://pmc.ncbi.nlm.nih.gov/articles/PMC11292368/), 
+
+## Misc ::: notes
+
+- Measuring ECM - matrisome score
+- Measuring HA expression - ratio of HAS to HYAL
+
+:::
+## Interesting tidbits about HA that may not mean anything rn 
+
+- Increased HA production in rats (induced by naked mole rat HAS2) enhances mouse lifespan [paper](https://www.nature.com/articles/s41586-023-06463-0).
+- HA can confer resistence to doxirubicin by binding to it. [paper](https://www.nature.com/articles/s41388-023-02837-w?fromPaywallRec=false)
+- HA is essential to "cold-induced adipocyte beiging" - turning white adipocytes to beige/brown adipocytes that are more metabolically active. [paper](https://www.mdpi.com/2073-4409/13/15/1233). In the same line, HA being a product of glucose metabolism, was believed to be overexpressed in diabetes because of the increase in plasma hyaluranon, with the inhibitor proposed as a treatment. But turns out it is exactly the opposite in adipocytes. [paper] (https://www.nature.com/articles/s41467-021-25025-4)
+
+```{r knitting, eval=F,include=F}
+rmarkdown::render('script.rmd', 'bookdown::html_document2', output_file = "AnalysisNotes.html")
+```
+
