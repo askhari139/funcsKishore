@@ -364,75 +364,6 @@ display: none;
 </ul>
 </div>
 
-<pre><code>## Loading required package: dplyr</code></pre>
-<pre><code>## 
-## Attaching package: &#39;dplyr&#39;</code></pre>
-<pre><code>## The following objects are masked from &#39;package:stats&#39;:
-## 
-##     filter, lag</code></pre>
-<pre><code>## The following objects are masked from &#39;package:base&#39;:
-## 
-##     intersect, setdiff, setequal, union</code></pre>
-<pre><code>## Loading required package: readr</code></pre>
-<pre><code>## Loading required package: magrittr</code></pre>
-<pre><code>## Loading required package: ggplot2</code></pre>
-<pre><code>## Loading required package: tidyr</code></pre>
-<pre><code>## 
-## Attaching package: &#39;tidyr&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:magrittr&#39;:
-## 
-##     extract</code></pre>
-<pre><code>## Loading required package: JuliaCall</code></pre>
-<pre><code>## Loading required package: xfun</code></pre>
-<pre><code>## 
-## Attaching package: &#39;xfun&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:base&#39;:
-## 
-##     attr</code></pre>
-<pre><code>## Loading required package: stringr</code></pre>
-<pre><code>## 
-## Attaching package: &#39;stringr&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:xfun&#39;:
-## 
-##     str_wrap</code></pre>
-<pre><code>## Loading required package: future</code></pre>
-<pre><code>## Loading required package: future.apply</code></pre>
-<pre><code>## Loading required package: purrr</code></pre>
-<pre><code>## 
-## Attaching package: &#39;purrr&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:magrittr&#39;:
-## 
-##     set_names</code></pre>
-<pre><code>## Registered S3 method overwritten by &#39;GGally&#39;:
-##   method from   
-##   +.gg   ggplot2</code></pre>
-<pre><code>## 
-## Attaching package: &#39;scales&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:purrr&#39;:
-## 
-##     discard</code></pre>
-<pre><code>## The following object is masked from &#39;package:readr&#39;:
-## 
-##     col_factor</code></pre>
-<pre><code>## Loading required package: grid</code></pre>
-<pre><code>## ========================================
-## ComplexHeatmap version 2.21.1
-## Bioconductor page: http://bioconductor.org/packages/ComplexHeatmap/
-## Github page: https://github.com/jokergoo/ComplexHeatmap
-## Documentation: http://jokergoo.github.io/ComplexHeatmap-reference
-## 
-## If you use it in published research, please cite either one:
-## - Gu, Z. Complex Heatmap Visualization. iMeta 2022.
-## - Gu, Z. Complex heatmaps reveal patterns and correlations in multidimensional 
-##     genomic data. Bioinformatics 2016.
-## 
-## 
-## The new InteractiveComplexHeatmap package can directly export static 
-## complex heatmaps into an interactive Shiny app with zero effort. Have a try!
-## 
-## This message can be suppressed by:
-##   suppressPackageStartupMessages(library(ComplexHeatmap))
-## ========================================</code></pre>
 <div id="key-points-of-literature" class="section level2" number="1">
 <h2><span class="header-section-number">1</span> Key points of literature</h2>
 <ul>
@@ -609,6 +540,8 @@ ggplot(df, aes(x = HA, y = Expression)) +
 <li>EMT-stemness interactions</li>
 <li>EMT-proliferation interactions</li>
 <li>HYAL1 gets activated by TGFb1 signalling</li>
+<li>YAP1/TAZ pathway increases RHAMM expression, which in turn increases HA dependent migration : <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC5706831/">paper</a></li>
+<li>HA is necessary for YAP/TAZ nuclear localization in zebrafish fin regeneration, which in turn is necessary for proliferation, as measured by perturbation experiments : <a href="https://www.biorxiv.org/content/10.1101/2024.11.15.623835v1.full">paper</a></li>
 </ul>
 </div>
 <div id="supporting-statements-and-citations-for-the-importance-of-ha-in-wound-regeneration" class="section level2" number="10">
@@ -616,6 +549,7 @@ ggplot(df, aes(x = HA, y = Expression)) +
 <ul>
 <li>Fetal fibroblasts form HA rich ECMs, which adult fibroblasts do not. IL10 is a key molecule seen in fetal wounds but not in adult wounds, and there is evidence that IL10 can induce HA production in fibroblasts. <a href="https://faseb.onlinelibrary.wiley.com/doi/full/10.1096/fj.201600856R">paper</a>. IL10-&gt;STAT3-&gt;HAS2-&gt;HA</li>
 <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11292368/">Hyaluronan turnover by keratinocytes</a>,</li>
+<li><a href>HA - CD44 based cell migration via CD44 coated protrusions, observed in glioblastoma</a></li>
 </ul>
 </div>
 <div id="misc-notes" class="section level2" number="11">
