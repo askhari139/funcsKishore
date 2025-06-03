@@ -354,15 +354,85 @@ display: none;
 <li><a href="#process" id="toc-process"><span class="toc-section-number">2</span> Process</a></li>
 <li><a href="#network-and-simulations" id="toc-network-and-simulations"><span class="toc-section-number">3</span> Network and simulations</a></li>
 <li><a href="#results" id="toc-results"><span class="toc-section-number">4</span> Results</a></li>
-<li><a href="#next-steps" id="toc-next-steps"><span class="toc-section-number">5</span> Next Steps</a></li>
-<li><a href="#useful-data-papers" id="toc-useful-data-papers"><span class="toc-section-number">6</span> Useful data papers</a></li>
-<li><a href="#pontential-sources-of-complete-regeneration-data" id="toc-pontential-sources-of-complete-regeneration-data"><span class="toc-section-number">7</span> Pontential sources of complete regeneration data</a></li>
-<li><a href="#references-for-links" id="toc-references-for-links"><span class="toc-section-number">8</span> References for links</a></li>
-<li><a href="#supporting-statements-and-citations-for-the-importance-of-ha-in-wound-regeneration" id="toc-supporting-statements-and-citations-for-the-importance-of-ha-in-wound-regeneration"><span class="toc-section-number">9</span> Supporting statements and citations for the importance of HA in wound regeneration</a></li>
-<li><a href="#misc-notes" id="toc-misc-notes"><span class="toc-section-number">10</span> Misc ::: notes</a></li>
+<li><a href="#further-modelling-plans" id="toc-further-modelling-plans"><span class="toc-section-number">5</span> Further modelling plans</a></li>
+<li><a href="#next-steps" id="toc-next-steps"><span class="toc-section-number">6</span> Next Steps</a></li>
+<li><a href="#useful-data-papers" id="toc-useful-data-papers"><span class="toc-section-number">7</span> Useful data papers</a></li>
+<li><a href="#pontential-sources-of-complete-regeneration-data" id="toc-pontential-sources-of-complete-regeneration-data"><span class="toc-section-number">8</span> Pontential sources of complete regeneration data</a></li>
+<li><a href="#references-for-links" id="toc-references-for-links"><span class="toc-section-number">9</span> References for links</a></li>
+<li><a href="#supporting-statements-and-citations-for-the-importance-of-ha-in-wound-regeneration" id="toc-supporting-statements-and-citations-for-the-importance-of-ha-in-wound-regeneration"><span class="toc-section-number">10</span> Supporting statements and citations for the importance of HA in wound regeneration</a></li>
+<li><a href="#misc-notes" id="toc-misc-notes"><span class="toc-section-number">11</span> Misc ::: notes</a></li>
 </ul>
 </div>
 
+<pre><code>## Loading required package: dplyr</code></pre>
+<pre><code>## 
+## Attaching package: &#39;dplyr&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre><code>## Loading required package: readr</code></pre>
+<pre><code>## Loading required package: magrittr</code></pre>
+<pre><code>## Loading required package: ggplot2</code></pre>
+<pre><code>## Loading required package: tidyr</code></pre>
+<pre><code>## 
+## Attaching package: &#39;tidyr&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:magrittr&#39;:
+## 
+##     extract</code></pre>
+<pre><code>## Loading required package: JuliaCall</code></pre>
+<pre><code>## Loading required package: xfun</code></pre>
+<pre><code>## 
+## Attaching package: &#39;xfun&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:base&#39;:
+## 
+##     attr</code></pre>
+<pre><code>## Loading required package: stringr</code></pre>
+<pre><code>## 
+## Attaching package: &#39;stringr&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:xfun&#39;:
+## 
+##     str_wrap</code></pre>
+<pre><code>## Loading required package: future</code></pre>
+<pre><code>## Loading required package: future.apply</code></pre>
+<pre><code>## Loading required package: purrr</code></pre>
+<pre><code>## 
+## Attaching package: &#39;purrr&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:magrittr&#39;:
+## 
+##     set_names</code></pre>
+<pre><code>## Registered S3 method overwritten by &#39;GGally&#39;:
+##   method from   
+##   +.gg   ggplot2</code></pre>
+<pre><code>## 
+## Attaching package: &#39;scales&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:purrr&#39;:
+## 
+##     discard</code></pre>
+<pre><code>## The following object is masked from &#39;package:readr&#39;:
+## 
+##     col_factor</code></pre>
+<pre><code>## Loading required package: grid</code></pre>
+<pre><code>## ========================================
+## ComplexHeatmap version 2.21.1
+## Bioconductor page: http://bioconductor.org/packages/ComplexHeatmap/
+## Github page: https://github.com/jokergoo/ComplexHeatmap
+## Documentation: http://jokergoo.github.io/ComplexHeatmap-reference
+## 
+## If you use it in published research, please cite either one:
+## - Gu, Z. Complex Heatmap Visualization. iMeta 2022.
+## - Gu, Z. Complex heatmaps reveal patterns and correlations in multidimensional 
+##     genomic data. Bioinformatics 2016.
+## 
+## 
+## The new InteractiveComplexHeatmap package can directly export static 
+## complex heatmaps into an interactive Shiny app with zero effort. Have a try!
+## 
+## This message can be suppressed by:
+##   suppressPackageStartupMessages(library(ComplexHeatmap))
+## ========================================</code></pre>
 <div id="key-points-of-literature" class="section level2" number="1">
 <h2><span class="header-section-number">1</span> Key points of literature</h2>
 <ul>
@@ -463,8 +533,20 @@ ggplot(df, aes(x = HA, y = Expression)) +
 ```
 -->
 </div>
-<div id="next-steps" class="section level2" number="5">
-<h2><span class="header-section-number">5</span> Next Steps</h2>
+<div id="further-modelling-plans" class="section level2" number="5">
+<h2><span class="header-section-number">5</span> Further modelling plans</h2>
+<p>Wound healing requires the following major components
+- Cellular processes that include Inflammation, cell migration, stemness, ECM manipulation and proliferation. Companion to all this is EMT
+- Cellular components that include fibroblasts, keratinocytes, immune cells, endothelial cells and platelets
+- Environmental factors include HA, Collagen, crosslinker proteins and glycans, Eschar (comprised of blood clot) and cytokines
+- Stages include
+- Pre wound concentration of cytokines and growth factors, and immune cells available on site that can trigger immediate inflammation upon wound formation
+- Post wound recruitment of immune cells that triggers inflammation positive feedback loops
+- Migration and remodelling of keratinocytes
+- proliferation</p>
+</div>
+<div id="next-steps" class="section level2" number="6">
+<h2><span class="header-section-number">6</span> Next Steps</h2>
 <ul>
 <li>Current model treats the HA as unbound to ECM, except maybe for the activation of TGFß. How to include HA ECM dynamics?</li>
 <li>Inlcude the ECM effects:
@@ -474,8 +556,8 @@ ggplot(df, aes(x = HA, y = Expression)) +
 </ul></li>
 </ul>
 </div>
-<div id="useful-data-papers" class="section level2" number="6">
-<h2><span class="header-section-number">6</span> Useful data papers</h2>
+<div id="useful-data-papers" class="section level2" number="7">
+<h2><span class="header-section-number">7</span> Useful data papers</h2>
 <ul>
 <li><p>Kevin J Chalut</p>
 <ul>
@@ -491,25 +573,32 @@ ggplot(df, aes(x = HA, y = Expression)) +
 <ul>
 <li><a href="https://www.biorxiv.org/content/10.1101/2023.10.27.564423v1">Molecular basis for positional memory</a> - scRNAseq data on axolotl limb regeneration. The paper identifies hadn2 and shh signalling as key players. All samples are 14/15 dpa, collected around the blastema in the anterior and posterior sections. Not the best data to study HA or ECM effects in wound healing, but could be useful. Also not published for some reason. <a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE284768">GSE284768</a></li>
 </ul></li>
+<li><p>MRL Mouse datasets</p>
+<ul>
+<li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC4647819/#fn-group1">Comparative transcriptome analysis of different mouse strains including MRL/Mpj</a></li>
+</ul></li>
 <li><p><a href="https://www.cell.com/cell-stem-cell/fulltext/S1934-5909%2824%2900412-0">Spatiotemporal analysis of accute and chronic wound healing</a> - ST RNAseq data on human skin wounds, doesn’t talk about HA or the ECM much, but has ample data on accute wounds, chronic wounds (ulcers) at multiple time and space points. Focus on re-epithelialization - numbers: <a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE241132">GSE241132</a> - Acute wound scRNAseq, <a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE265972">GSE265972</a> - Chronic wound, <a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE241124">GSE241124</a> - Spatial seq, and <a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE218430">GSE218430</a> - mouse wound single cell and CHIRP seq data at wound 3.</p></li>
-<li><p><a href="https://www.biorxiv.org/content/10.1101/2024.11.15.623835v1.full">Zebra fish fin regeneration impaired by excercise mediated HA degradation</a> - Swimming after fin wound leads to HA degradation, reduced YAP nuclear localization and reduced regeneration. scRNAseq shows a downregulation of ECM genes including has2 and HAPLN1. Blastema only it looks like - GSE293062</p></li>
+<li><p><a href="https://www.biorxiv.org/content/10.1101/2024.11.15.623835v1.full">Zebra fish fin regeneration impaired by excercise mediated HA degradation</a> - Swimming after fin wound leads to HA degradation, reduced YAP nuclear localization and reduced regeneration. scRNAseq shows a downregulation of ECM genes including has2 and HAPLN1. Blastema only it looks like. bulk RNAseq - <a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE293062">GSE293062</a></p></li>
 <li><p><a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?token=utmbmwkohdqvnwz&amp;acc=GSE64624">MRL mouse regeneration for different tissue types</a> - Microarray data on MRL mouse regeneration</p></li>
 <li><p><a href="https://academic.oup.com/proteincell/article/12/1/57/6746933?login=false#386884040">Axolotl limb regeneration day-wise data</a> - scRNAseq data on axolotl limb regeneration at different time points. PRJNA589484 (Raw data needs to be processed)</p></li>
+<li><p><a href>MRL mouse vs C57BL/6J, BALB/c mice strains tissue wise methylation data</a> Paper can’t be found, but data is here at</p></li>
 <li><p><a href="https://pubmed.ncbi.nlm.nih.gov/39575453/">Axolotl Aged limbs vs juvenile limbs regeneration - could be useful to show the ageing connection</a> - 10dpa data from juvenile (8months) and adult (8 years) limb. They see regeneration in juvenile limbs but not adult limbs. This is a great control case comparision. <a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE237864">GSE237864</a> - count matrices available.</p></li>
+<li><p><a href="https://www.tandfonline.com/doi/full/10.2217/epi-2016-0068?scroll=top&amp;needAccess=true">Mouse fetal skin regeneration</a> Methylome and transcriptome of C57BL/6 strain mouse fetal skin wound. “The genes associated with inflammatory response and hyaluronate degradation showed increased DNA methylation before the transition, while those involved in embryonic morphogenesis, neuron differentiation and synapse functions did so after.” Transcriptome is mass microarray of 24K genes, bulk. E15, E16, E18, E19 and adult dorsal skin samples are analyzed. <a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE67878">GSE67878</a></p></li>
 </ul>
 </div>
-<div id="pontential-sources-of-complete-regeneration-data" class="section level2" number="7">
-<h2><span class="header-section-number">7</span> Pontential sources of complete regeneration data</h2>
+<div id="pontential-sources-of-complete-regeneration-data" class="section level2" number="8">
+<h2><span class="header-section-number">8</span> Pontential sources of complete regeneration data</h2>
 <ul>
 <li>Axolotl limb regeneration</li>
 <li>Zebra fish fin regeneration</li>
 <li>MRL mouse regeneration</li>
 <li>Humal oral wound healing</li>
 <li>MRL mouse ear hole regeneration</li>
+<li>Mouse fetal skin</li>
 </ul>
 </div>
-<div id="references-for-links" class="section level2" number="8">
-<h2><span class="header-section-number">8</span> References for links</h2>
+<div id="references-for-links" class="section level2" number="9">
+<h2><span class="header-section-number">9</span> References for links</h2>
 <ul>
 <li>ZEB activates HAS2</li>
 <li>HA activates CD44</li>
@@ -522,15 +611,15 @@ ggplot(df, aes(x = HA, y = Expression)) +
 <li>HYAL1 gets activated by TGFb1 signalling</li>
 </ul>
 </div>
-<div id="supporting-statements-and-citations-for-the-importance-of-ha-in-wound-regeneration" class="section level2" number="9">
-<h2><span class="header-section-number">9</span> Supporting statements and citations for the importance of HA in wound regeneration</h2>
+<div id="supporting-statements-and-citations-for-the-importance-of-ha-in-wound-regeneration" class="section level2" number="10">
+<h2><span class="header-section-number">10</span> Supporting statements and citations for the importance of HA in wound regeneration</h2>
 <ul>
 <li>Fetal fibroblasts form HA rich ECMs, which adult fibroblasts do not. IL10 is a key molecule seen in fetal wounds but not in adult wounds, and there is evidence that IL10 can induce HA production in fibroblasts. <a href="https://faseb.onlinelibrary.wiley.com/doi/full/10.1096/fj.201600856R">paper</a>. IL10-&gt;STAT3-&gt;HAS2-&gt;HA</li>
 <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11292368/">Hyaluronan turnover by keratinocytes</a>,</li>
 </ul>
 </div>
-<div id="misc-notes" class="section level2" number="10">
-<h2><span class="header-section-number">10</span> Misc ::: notes</h2>
+<div id="misc-notes" class="section level2" number="11">
+<h2><span class="header-section-number">11</span> Misc ::: notes</h2>
 <ul>
 <li>Measuring ECM - matrisome score</li>
 <li>Measuring HA expression - ratio of HAS to HYAL</li>
