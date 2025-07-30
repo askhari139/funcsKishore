@@ -1,4 +1,7 @@
-
+ffmpegImgToVid <- function(pattern, extension = ".png", videoFrameRate = 10, outputVid = pattern) {
+    cmd <- paste0("ffmpeg -framerate 25 -i ", pattern, "%d.", extension, "-c:v libx264 -r ", videoFrameRate, " ", outputVid, ".mp4")
+    return(cmd)
+}
 hex2dec <- function(x) {
     x <- str_split(x, "") %>% rev
     hexcode <- 0:15
