@@ -21,7 +21,7 @@ RemoveAllFiles <- function() {
 
 DirectoryNav <- function(d) {
     if (!dir.exists(d))
-        dir.create(d)
+        dir.create(d, recursive=T)
     setwd(d)
 }
 
