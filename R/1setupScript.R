@@ -1,31 +1,31 @@
-installed <- library()$results[, 1]
-packages <-
-    c(
-        "tidyr",
-        "readr",
-        "magrittr",
-        "ggplot2",
-        "compiler",
-        "dplyr",
-        # "JuliaCall",
-        "xfun",
-        "stringr",
-        "future",
-        "future.apply",
-        "purrr",
-        # "devtools",
-        "grid",
-        "ggthemes",
-        # "reticulate",
-        "GGally"
-    )
-toInstall <- packages[!(packages %in% installed)]
-sapply(toInstall, install.packages, repos = "https://cloud.r-project.org/")
+# installed <- library()$results[, 1]
+# packages <-
+#     c(
+#         "tidyr",
+#         "readr",
+#         "magrittr",
+#         "ggplot2",
+#         "compiler",
+#         "dplyr",
+#         # "JuliaCall",
+#         "xfun",
+#         "stringr",
+#         "future",
+#         "future.apply",
+#         "purrr",
+#         # "devtools",
+#         "grid",
+#         "ggthemes",
+#         # "reticulate",
+#         "GGally"
+#     )
+# toInstall <- packages[!(packages %in% installed)]
+# sapply(toInstall, install.packages, repos = "https://cloud.r-project.org/")
+#
+# sapply(packages, library, character.only = T)
+# options(lazy = F, stringsAsFactors = F, repos = "https://cloud.r-project.org/")
 
-sapply(packages, library, character.only = T)
-options(lazy = F, stringsAsFactors = F, repos = "https://cloud.r-project.org/")
-
-# python_packages <- 
+# python_packages <-
 #     c(
 #         "networkx",
 #         "scipy",
